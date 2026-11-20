@@ -1,0 +1,2528 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>My Wardrobe 我的衣櫃</title>
+  <!-- 英文草寫與中文優雅字體 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Noto+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-cream: #FAF5EE;
+      --coffee-dark: #4A3326;
+      --coffee-main: #6B4A37;
+      --coffee-mid: #8C6650;
+      --coffee-light: #C8AE9B;
+      --coffee-soft: #EFE4D6;
+      --lace-cream: #FFFBF5;
+      --accent-rose: #C86D6D;
+      --text-dark: #3B281E;
+      --text-muted: #846A5B;
+      --shadow-soft: 0 6px 20px rgba(74, 51, 38, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    input, textarea {
+      user-select: text;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #E8DDD0;
+      font-family: 'Noto Sans TC', sans-serif;
+      color: var(--text-dark);
+      display: flex;
+      justify-content: center;
+      min-height: 100dvh;
+    }
+
+    /* 手機版主容器 */
+    #app {
+      width: 100%;
+      max-width: 480px;
+      min-height: 100dvh;
+      background-color: var(--bg-cream);
+      background-image: radial-gradient(#E3D4C3 0.75px, transparent 0.75px);
+      background-size: 16px 16px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      box-shadow: 0 0 30px rgba(59, 40, 30, 0.15);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* ================= 首頁：中央與右上角愛心 ================= */
+    #home-view {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      padding: 24px 20px 140px;
+    }
+
+    .top-right-fav-btn {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: var(--lace-cream);
+      border: 2px solid var(--coffee-light);
+      color: var(--accent-rose);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: var(--shadow-soft);
+      cursor: pointer;
+      z-index: 10;
+      transition: transform 0.18s ease;
+    }
+
+    .top-right-fav-btn:active {
+      transform: scale(0.92);
+    }
+
+    .home-title-wrap {
+      text-align: center;
+      pointer-events: none;
+      animation: fadeIn 0.6s ease;
+    }
+
+    .home-script-title {
+      font-family: 'Great Vibes', cursive;
+      font-size: 56px;
+      color: var(--coffee-main);
+      margin: 0;
+      line-height: 1.1;
+      text-shadow: 0 2px 6px rgba(107, 74, 55, 0.14);
+    }
+
+    .home-sub-hint {
+      margin-top: 8px;
+      font-size: 12px;
+      letter-spacing: 3px;
+      color: var(--text-muted);
+    }
+
+    /* ================= 仿蕾絲花邊底部導覽區 ================= */
+    #bottom-nav-wrapper {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      z-index: 40;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+    }
+
+    #bottom-nav-wrapper.collapsed {
+      transform: translate(-50%, 115%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* 仿蕾絲波浪花邊 SVG 頂部裝飾 */
+    .lace-border-top {
+      width: 100%;
+      height: 28px;
+      display: block;
+      margin-bottom: -1px;
+      filter: drop-shadow(0 -3px 4px rgba(74, 51, 38, 0.1));
+    }
+
+    .bottom-nav-bar {
+      background: linear-gradient(180deg, var(--coffee-main) 0%, var(--coffee-dark) 100%);
+      padding: 6px 8px calc(14px + env(safe-area-inset-bottom));
+      display: grid;
+      grid-template-columns: repeat(3, 1fr) 54px repeat(3, 1fr);
+      align-items: center;
+      gap: 4px;
+      position: relative;
+      border-top: 1px dashed rgba(255, 251, 245, 0.45);
+    }
+
+    .nav-cat-btn {
+      background: rgba(255, 251, 245, 0.12);
+      border: 1px solid rgba(255, 251, 245, 0.28);
+      border-radius: 14px;
+      padding: 8px 2px;
+      color: var(--lace-cream);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .nav-cat-btn:active {
+      transform: scale(0.94);
+      background: rgba(255, 251, 245, 0.26);
+    }
+
+    .nav-cat-icon {
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .nav-cat-label {
+      font-size: 11px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    /* 中央凸起加號鍵（蕾絲圓環） */
+    .nav-add-btn {
+      width: 54px;
+      height: 54px;
+      margin-top: -26px;
+      border-radius: 50%;
+      background: var(--lace-cream);
+      color: var(--coffee-dark);
+      border: 3px solid var(--coffee-main);
+      box-shadow: 0 4px 12px rgba(42, 26, 18, 0.35), inset 0 0 0 2px var(--coffee-light);
+      font-size: 28px;
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.18s ease;
+    }
+
+    .nav-add-btn:active {
+      transform: scale(0.92);
+    }
+
+    /* ================= 標號2圖：衣櫃分類抽屜瀏覽頁 ================= */
+    #wardrobe-view {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100dvh;
+      padding-bottom: 84px;
+    }
+
+    /* 抽屜造型篩選區 */
+    .drawer-header {
+      background: linear-gradient(180deg, var(--coffee-main) 0%, #5A3D2D 100%);
+      color: var(--lace-cream);
+      border-bottom-left-radius: 24px;
+      border-bottom-right-radius: 24px;
+      padding: 12px 14px 14px;
+      box-shadow: 0 6px 18px rgba(74, 51, 38, 0.22);
+      position: sticky;
+      top: 0;
+      z-index: 25;
+      animation: slideDown 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .drawer-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .icon-circle-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 251, 245, 0.35);
+      background: rgba(255, 251, 245, 0.14);
+      color: var(--lace-cream);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .icon-circle-btn.dark {
+      background: var(--lace-cream);
+      color: var(--coffee-dark);
+      border-color: var(--coffee-light);
+      box-shadow: var(--shadow-soft);
+    }
+
+    /* 分類切換膠囊列（方便選取模式下跨分類切換） */
+    .drawer-cat-tabs {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      max-width: 72%;
+    }
+    .drawer-cat-tabs::-webkit-scrollbar { display: none; }
+
+    .drawer-cat-tab {
+      padding: 5px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: rgba(255, 251, 245, 0.14);
+      color: var(--lace-cream);
+      border: 1px solid transparent;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .drawer-cat-tab.active {
+      background: var(--lace-cream);
+      color: var(--coffee-dark);
+      font-weight: 600;
+    }
+
+    /* 上排：款式分類 */
+    .filter-row {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 4px 0;
+      scrollbar-width: none;
+    }
+    .filter-row::-webkit-scrollbar { display: none; }
+
+    .subcat-chip {
+      padding: 5px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      background: rgba(255, 251, 245, 0.15);
+      color: var(--lace-cream);
+      border: 1px solid rgba(255, 251, 245, 0.25);
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .subcat-chip.active {
+      background: var(--coffee-soft);
+      color: var(--coffee-dark);
+      font-weight: 600;
+      border-color: var(--lace-cream);
+    }
+
+    /* 下排：顏色分類 */
+    .color-filter-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 8px 2px 2px;
+      margin-top: 4px;
+      border-top: 1px dashed rgba(255, 251, 245, 0.28);
+      scrollbar-width: none;
+    }
+    .color-filter-row::-webkit-scrollbar { display: none; }
+
+    .color-dot-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      background: none;
+      border: none;
+      padding: 2px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .color-swatch {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.55);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .color-dot-btn.active .color-swatch {
+      transform: scale(1.18);
+      border-color: #FFF;
+      box-shadow: 0 0 0 2px var(--coffee-dark), 0 0 0 4px #FFF;
+    }
+
+    .color-dot-label {
+      font-size: 10px;
+      color: rgba(255, 251, 245, 0.85);
+    }
+
+    /* 抽屜把手裝飾 */
+    .drawer-handle {
+      width: 38px;
+      height: 4px;
+      border-radius: 99px;
+      background: rgba(255, 251, 245, 0.45);
+      margin: 8px auto 0;
+    }
+
+    /* 選取模式提示條 */
+    .selection-banner {
+      background: var(--coffee-soft);
+      color: var(--coffee-dark);
+      padding: 8px 14px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--coffee-light);
+    }
+
+    /* 1排3列衣物網格 */
+    .grid-3-col {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 14px 12px;
+    }
+
+    .item-card {
+      background: var(--lace-cream);
+      border-radius: 12px;
+      border: 1px solid #E5D6C5;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 2px 8px rgba(74, 51, 38, 0.06);
+    }
+
+    .item-img-box {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      background: #F2EAE0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .item-img-box img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.65s ease-in-out;
+    }
+
+    .item-img-box img.slide-hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* 雙圖指示點 */
+    .slide-dots {
+      position: absolute;
+      bottom: 5px;
+      right: 6px;
+      display: flex;
+      gap: 3px;
+      background: rgba(59, 40, 30, 0.35);
+      padding: 2px 5px;
+      border-radius: 99px;
+      z-index: 3;
+    }
+
+    .slide-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    .slide-dot.active {
+      background: #FFF;
+    }
+
+    /* 卡片上方愛心 */
+    .card-heart-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: rgba(255, 251, 245, 0.88);
+      border: 1px solid rgba(200, 174, 155, 0.6);
+      color: var(--accent-rose);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 4;
+    }
+
+    /* 編輯模式左下角選框 */
+    .card-checkbox {
+      position: absolute;
+      bottom: 5px;
+      left: 5px;
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: rgba(255, 251, 245, 0.92);
+      border: 2px solid var(--coffee-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: bold;
+      color: #FFF;
+      z-index: 5;
+      cursor: pointer;
+    }
+
+    .card-checkbox.checked {
+      background: var(--coffee-main);
+    }
+
+    /* 圖片下方空白區：#tag 細節標籤 */
+    .item-tags-area {
+      padding: 5px 6px 6px;
+      min-height: 26px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+      align-items: center;
+      background: var(--lace-cream);
+    }
+
+    .tag-pill {
+      font-size: 10px;
+      line-height: 1.2;
+      padding: 2px 5px;
+      border-radius: 5px;
+      background: var(--coffee-soft);
+      color: var(--coffee-dark);
+      border: 1px solid #DFCBB7;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* 左下與右下懸浮工具列 */
+    .floating-bottom-controls {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      padding: 0 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      pointer-events: none;
+      z-index: 30;
+    }
+
+    .floating-left-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: auto;
+    }
+
+    .floating-right-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: auto;
+    }
+
+    .edit-action-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .float-round-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--coffee-dark);
+      color: var(--lace-cream);
+      border: 2px solid var(--lace-cream);
+      box-shadow: 0 4px 12px rgba(59, 40, 30, 0.28);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .float-round-btn.active {
+      background: var(--accent-rose);
+    }
+
+    .edit-popup-actions {
+      display: flex;
+      gap: 6px;
+      background: var(--lace-cream);
+      padding: 5px 8px;
+      border-radius: 99px;
+      border: 1.5px solid var(--coffee-main);
+      box-shadow: var(--shadow-soft);
+      animation: fadeIn 0.2s ease;
+    }
+
+    .pill-action-btn {
+      border: none;
+      border-radius: 99px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .pill-action-btn.danger {
+      background: #FBE9E9;
+      color: #B84242;
+    }
+
+    .pill-action-btn.primary {
+      background: var(--coffee-main);
+      color: var(--lace-cream);
+    }
+
+    /* ================= 收藏／我的搭配頁（標號5、8圖） ================= */
+    #collections-view, #folder-detail-view {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100dvh;
+      padding-bottom: 84px;
+      transition: background-color 0.3s ease;
+    }
+
+    .subpage-header {
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 251, 245, 0.78);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(107, 74, 55, 0.16);
+      position: sticky;
+      top: 0;
+      z-index: 25;
+    }
+
+    .subpage-title-group {
+      text-align: center;
+    }
+
+    .subpage-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--coffee-dark);
+      margin: 0;
+    }
+
+    .subpage-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* 搭配資料夾卡片（1排3列，最多3張拼貼封面） */
+    .folder-card {
+      background: rgba(255, 251, 245, 0.92);
+      border-radius: 14px;
+      border: 1px solid rgba(107, 74, 55, 0.22);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 3px 10px rgba(74, 51, 38, 0.08);
+      cursor: pointer;
+    }
+
+    .folder-collage {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: #EFE5D8;
+      display: grid;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .folder-collage.count-0 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 24px;
+    }
+
+    .folder-collage.count-1 {
+      grid-template-columns: 1fr;
+    }
+
+    .folder-collage.count-2 {
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5px;
+    }
+
+    .folder-collage.count-3 {
+      grid-template-columns: 1.35fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 1.5px;
+    }
+
+    .folder-collage.count-3 img:first-child {
+      grid-row: 1 / 3;
+    }
+
+    .folder-collage img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .folder-name {
+      padding: 7px 6px;
+      font-size: 12px;
+      font-weight: 500;
+      text-align: center;
+      color: var(--coffee-dark);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* 右上角大類目錄彈出選單（標號5圖） */
+    .category-popover {
+      position: fixed;
+      top: 62px;
+      right: 16px;
+      width: 190px;
+      background: var(--lace-cream);
+      border: 1.5px solid var(--coffee-main);
+      border-radius: 16px;
+      box-shadow: 0 10px 26px rgba(59, 40, 30, 0.22);
+      z-index: 60;
+      overflow: hidden;
+      animation: fadeIn 0.18s ease;
+    }
+
+    .category-popover-header {
+      padding: 9px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--coffee-soft);
+      color: var(--coffee-dark);
+      border-bottom: 1px solid #DFCBB7;
+    }
+
+    .category-popover-list {
+      max-height: 240px;
+      overflow-y: auto;
+    }
+
+    .category-popover-item {
+      padding: 10px 12px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #F2E7DA;
+      cursor: pointer;
+    }
+
+    .category-popover-item.active {
+      background: #F6ECE0;
+      font-weight: 600;
+    }
+
+    .cat-color-badge {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+      flex-shrink: 0;
+    }
+
+    .category-popover-add {
+      padding: 10px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--coffee-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: #FFFDF9;
+      cursor: pointer;
+    }
+
+    /* ================= 彈窗 Modal 系統（標號3、4、6、7圖） ================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(42, 26, 18, 0.48);
+      backdrop-filter: blur(2px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 80;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 420px;
+      max-height: 88dvh;
+      overflow-y: auto;
+      background: var(--lace-cream);
+      border-radius: 22px;
+      border: 2px solid var(--coffee-light);
+      padding: 18px 16px 20px;
+      box-shadow: 0 14px 36px rgba(42, 26, 18, 0.3);
+      animation: popUp 0.22s ease;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--coffee-dark);
+      margin: 0;
+    }
+
+    .modal-close-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: none;
+      background: var(--coffee-soft);
+      color: var(--coffee-dark);
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    /* 標號3圖：左側圖片區 + 右側按鈕與分類表單 */
+    .create-item-layout {
+      display: grid;
+      grid-template-columns: 125px 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .preview-slots {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .img-slot-box {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      border-radius: 12px;
+      border: 1.5px dashed var(--coffee-light);
+      background: #F5ECE2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: var(--text-muted);
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      padding: 4px;
+    }
+
+    .img-slot-box img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .remove-slot-img {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(59, 40, 30, 0.75);
+      color: #FFF;
+      border: none;
+      font-size: 11px;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .upload-btn-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .soft-btn {
+      padding: 8px 6px;
+      border-radius: 10px;
+      border: 1px solid var(--coffee-main);
+      background: var(--coffee-soft);
+      color: var(--coffee-dark);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .soft-btn:active {
+      background: var(--coffee-light);
+    }
+
+    .form-section-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--coffee-main);
+      margin: 10px 0 6px;
+      display: block;
+    }
+
+    .chip-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .select-chip {
+      padding: 5px 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      border: 1px solid #D9C4B0;
+      background: #FFF;
+      color: var(--text-dark);
+      cursor: pointer;
+    }
+
+    .select-chip.active {
+      background: var(--coffee-main);
+      color: var(--lace-cream);
+      border-color: var(--coffee-dark);
+      font-weight: 500;
+    }
+
+    .color-grid-picker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .color-choice-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 99px;
+      border: 1px solid #D9C4B0;
+      background: #FFF;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .color-choice-btn.active {
+      border: 2px solid var(--coffee-dark);
+      background: var(--coffee-soft);
+      font-weight: 600;
+    }
+
+    .mini-dot {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 0, 0, 0.2);
+    }
+
+    .text-input {
+      width: 100%;
+      padding: 9px 11px;
+      border-radius: 10px;
+      border: 1.5px solid #D5BFA9;
+      background: #FFF;
+      font-size: 13px;
+      color: var(--text-dark);
+      outline: none;
+    }
+
+    .text-input:focus {
+      border-color: var(--coffee-main);
+    }
+
+    .submit-full-btn {
+      width: 100%;
+      margin-top: 14px;
+      padding: 11px;
+      border-radius: 12px;
+      border: none;
+      background: var(--coffee-dark);
+      color: var(--lace-cream);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* 顏色調色盤選擇區（標號6圖） */
+    .palette-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-top: 6px;
+    }
+
+    .bg-swatch-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid #D5BFA9;
+      cursor: pointer;
+    }
+
+    .bg-swatch-btn.active {
+      border: 3px solid var(--coffee-dark);
+      transform: scale(1.1);
+    }
+
+    /* 空白狀態提示 */
+    .empty-state {
+      text-align: center;
+      padding: 54px 20px;
+      color: var(--text-muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    /* Toast 提示訊息 */
+    #toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(59, 40, 30, 0.92);
+      color: var(--lace-cream);
+      padding: 8px 16px;
+      border-radius: 99px;
+      font-size: 12px;
+      z-index: 120;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    #toast.show {
+      opacity: 1;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes popUp {
+      from { transform: scale(0.94); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Toast 通知 -->
+    <div id="toast"></div>
+
+    <!-- ================= 1. 首頁視圖 ================= -->
+    <section id="home-view">
+      <button class="top-right-fav-btn" id="btn-open-collections" title="收藏／我的搭配">♥</button>
+      <div class="home-title-wrap">
+        <h1 class="home-script-title">My Wardrobe</h1>
+        <div class="home-sub-hint">我的專屬衣櫃</div>
+      </div>
+    </section>
+
+    <!-- ================= 2. 衣櫃分類抽屜視圖 ================= -->
+    <section id="wardrobe-view" class="hidden">
+      <header class="drawer-header">
+        <div class="drawer-top-row">
+          <button class="icon-circle-btn" id="btn-wardrobe-back" title="返回">←</button>
+          <div class="drawer-cat-tabs" id="drawer-cat-tabs"></div>
+          <div style="width:36px;"></div>
+        </div>
+        <!-- 上排：款式分類 -->
+        <div class="filter-row" id="drawer-subcat-row"></div>
+        <!-- 下排：顏色分類 -->
+        <div class="color-filter-row" id="drawer-color-row"></div>
+        <div class="drawer-handle"></div>
+      </header>
+
+      <!-- 若是從「建立資料夾」或「加入服裝至資料夾」進來的選取模式提示條 -->
+      <div id="wardrobe-picker-banner" class="selection-banner hidden">
+        <span id="picker-banner-text">已選取 0 件服裝（可跨分類選取）</span>
+        <button class="pill-action-btn primary" id="btn-confirm-picker">完成選取</button>
+      </div>
+
+      <!-- 1排3列衣物清單 -->
+      <div id="wardrobe-grid" class="grid-3-col"></div>
+      <div id="wardrobe-empty" class="empty-state hidden">
+        這個分類目前還沒有衣服喔～<br>點擊首頁下方的「＋」加入第一件單品吧！
+      </div>
+
+      <!-- 左下編輯 & 右下一鍵置頂 -->
+      <div class="floating-bottom-controls" id="wardrobe-floating-controls">
+        <div class="floating-left-stack">
+          <div class="edit-action-row">
+            <button class="float-round-btn" id="btn-wardrobe-edit" title="編輯">✎</button>
+            <div class="edit-popup-actions hidden" id="wardrobe-edit-actions">
+              <button class="pill-action-btn danger" id="btn-wardrobe-delete">刪除</button>
+              <button class="pill-action-btn primary" id="btn-wardrobe-edit-item">編輯檔案</button>
+            </div>
+          </div>
+        </div>
+        <div class="floating-right-stack">
+          <button class="float-round-btn" id="btn-wardrobe-top" title="一鍵置頂">↑</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 5. 收藏／我的搭配總覽頁 ================= -->
+    <section id="collections-view" class="hidden">
+      <header class="subpage-header">
+        <button class="icon-circle-btn dark" id="btn-col-back" title="返回首頁">←</button>
+        <div class="subpage-title-group">
+          <h2 class="subpage-title">收藏・我的搭配</h2>
+          <div class="subpage-subtitle" id="current-supercat-label">大類：預設搭配</div>
+        </div>
+        <button class="icon-circle-btn dark" id="btn-open-supercat-menu" title="大類目錄">☰</button>
+      </header>
+
+      <!-- 右上角大類目錄彈窗 -->
+      <div id="supercat-popover" class="category-popover hidden">
+        <div class="category-popover-header">搭配大類目錄</div>
+        <div class="category-popover-list" id="supercat-popover-list"></div>
+        <div class="category-popover-add" id="btn-popover-add-supercat">＋ 新增搭配大類</div>
+      </div>
+
+      <!-- 1排3列搭配資料夾 -->
+      <div id="folders-grid" class="grid-3-col"></div>
+      <div id="folders-empty" class="empty-state hidden">
+        這個大類裡還沒有搭配資料夾<br>點擊左下角「＋」建立第一個搭配吧！
+      </div>
+
+      <!-- 左下創建＋編輯 & 右下一鍵置頂 -->
+      <div class="floating-bottom-controls">
+        <div class="floating-left-stack">
+          <button class="float-round-btn" id="btn-col-create" title="創建資料夾或大類">＋</button>
+          <div class="edit-action-row">
+            <button class="float-round-btn" id="btn-col-edit" title="編輯資料夾">✎</button>
+            <div class="edit-popup-actions hidden" id="col-edit-actions">
+              <button class="pill-action-btn danger" id="btn-col-delete">刪除</button>
+              <button class="pill-action-btn primary" id="btn-col-move">移動資料夾</button>
+            </div>
+          </div>
+        </div>
+        <div class="floating-right-stack">
+          <button class="float-round-btn" id="btn-col-top" title="一鍵置頂">↑</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 8. 我的搭配資料夾內頁 ================= -->
+    <section id="folder-detail-view" class="hidden">
+      <header class="subpage-header">
+        <button class="icon-circle-btn dark" id="btn-folder-back" title="返回搭配列表">←</button>
+        <div class="subpage-title-group">
+          <h2 class="subpage-title" id="folder-detail-title">Look 1</h2>
+          <div class="subpage-subtitle" id="folder-detail-count">0 件單品</div>
+        </div>
+        <div style="width:36px;"></div>
+      </header>
+
+      <div id="folder-items-grid" class="grid-3-col"></div>
+      <div id="folder-items-empty" class="empty-state hidden">
+        資料夾還是空的喔～<br>點擊右下角「＋」從衣櫃挑選服裝加入！
+      </div>
+
+      <!-- 左下編輯（僅從資料夾移除） & 右下加號（前往衣櫃選取） -->
+      <div class="floating-bottom-controls">
+        <div class="floating-left-stack">
+          <div class="edit-action-row">
+            <button class="float-round-btn" id="btn-folder-edit" title="編輯">✎</button>
+            <div class="edit-popup-actions hidden" id="folder-edit-actions">
+              <button class="pill-action-btn danger" id="btn-folder-remove-items">從資料夾移除</button>
+            </div>
+          </div>
+        </div>
+        <div class="floating-right-stack">
+          <button class="float-round-btn" id="btn-folder-add-items" title="加入服裝">＋</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 1. 仿蕾絲花邊底部導覽區 ================= -->
+    <div id="bottom-nav-wrapper">
+      <!-- SVG 仿蕾絲波浪與小花洞孔邊緣 -->
+      <svg class="lace-border-top" viewBox="0 0 480 28" preserveAspectRatio="none">
+        <defs>
+          <pattern id="laceScallop" x="0" y="0" width="32" height="28" patternUnits="userSpaceOnUse">
+            <path d="M0,28 L0,16 Q16,0 32,16 L32,28 Z" fill="#6B4A37" />
+            <path d="M2,28 L2,17 Q16,3 30,17" fill="none" stroke="#FFFBF5" stroke-width="1.3" stroke-dasharray="2,2" opacity="0.75" />
+            <circle cx="16" cy="14" r="2.2" fill="#FAF5EE" opacity="0.85" />
+            <circle cx="11" cy="17" r="1.2" fill="#FAF5EE" opacity="0.7" />
+            <circle cx="21" cy="17" r="1.2" fill="#FAF5EE" opacity="0.7" />
+          </pattern>
+        </defs>
+        <rect x="0" y="0" width="480" height="28" fill="url(#laceScallop)" />
+      </svg>
+
+      <nav class="bottom-nav-bar">
+        <button class="nav-cat-btn" data-cat="外套">
+          <span class="nav-cat-icon">🧥</span>
+          <span class="nav-cat-label">外套</span>
+        </button>
+        <button class="nav-cat-btn" data-cat="上衣">
+          <span class="nav-cat-icon">👚</span>
+          <span class="nav-cat-label">上衣</span>
+        </button>
+        <button class="nav-cat-btn" data-cat="下裝">
+          <span class="nav-cat-icon">👖</span>
+          <span class="nav-cat-label">下裝</span>
+        </button>
+
+        <button class="nav-add-btn" id="btn-open-create-item" title="新增服裝">＋</button>
+
+        <button class="nav-cat-btn" data-cat="洋裝">
+          <span class="nav-cat-icon">👗</span>
+          <span class="nav-cat-label">洋裝</span>
+        </button>
+        <button class="nav-cat-btn" data-cat="鞋襪">
+          <span class="nav-cat-icon">👟</span>
+          <span class="nav-cat-label">鞋襪</span>
+        </button>
+        <button class="nav-cat-btn" data-cat="配件">
+          <span class="nav-cat-icon">👜</span>
+          <span class="nav-cat-label">配件</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- ================= 彈窗 A：新增／編輯服裝（標號3圖） ================= -->
+    <div id="modal-create-item" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title" id="create-item-modal-title">新增服裝至衣櫃</h3>
+          <button class="modal-close-btn" data-close="modal-create-item">✕</button>
+        </div>
+
+        <div class="create-item-layout">
+          <!-- 左側：最多兩張圖片預覽 -->
+          <div class="preview-slots">
+            <div class="img-slot-box" id="slot-preview-0">
+              <span>第 1 張<br>(主圖)</span>
+            </div>
+            <div class="img-slot-box" id="slot-preview-1">
+              <span>第 2 張<br>(細節/背面)</span>
+            </div>
+          </div>
+
+          <!-- 右側：相簿/貼上 ＋ 兩階分類 ＋ 顏色 ＋ #Tag -->
+          <div>
+            <div class="upload-btn-pair">
+              <button type="button" class="soft-btn" id="btn-pick-album">📷 相簿添加</button>
+              <button type="button" class="soft-btn" id="btn-paste-img">📋 貼上圖片</button>
+            </div>
+            <input type="file" id="file-input-album" accept="image/*" multiple class="hidden" />
+
+            <span class="form-section-label">1. 選擇分類（第一階）</span>
+            <div class="chip-wrap" id="form-cat-chips"></div>
+
+            <div id="form-subcat-section" class="hidden">
+              <span class="form-section-label">2. 選擇款式（第二階）</span>
+              <div class="chip-wrap" id="form-subcat-chips"></div>
+            </div>
+
+            <span class="form-section-label">3. 選擇顏色</span>
+            <div class="color-grid-picker" id="form-color-chips"></div>
+
+            <span class="form-section-label">4. 細節標籤（自動加 #，可用空白或逗號分隔）</span>
+            <input type="text" id="form-tags-input" class="text-input" placeholder="例如：磨毛 顯瘦 微透" />
+          </div>
+        </div>
+
+        <button type="button" class="submit-full-btn" id="btn-save-item">加入衣櫃</button>
+      </div>
+    </div>
+
+    <!-- ================= 彈窗 B：愛心加入／建立至我的搭配（標號4圖） ================= -->
+    <div id="modal-heart-action" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title">加入／建立我的搭配</h3>
+          <button class="modal-close-btn" data-close="modal-heart-action">✕</button>
+        </div>
+
+        <span class="form-section-label">【加入】現有的搭配資料夾</span>
+        <div id="heart-existing-folders" class="chip-wrap" style="margin-bottom:14px;"></div>
+
+        <hr style="border:none; border-top:1px dashed var(--coffee-light); margin:12px 0;" />
+
+        <span class="form-section-label">【建立】新的搭配資料夾（兩階段）</span>
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:6px;">第一階：選擇或建立大類（如：秋季）</div>
+        <div class="chip-wrap" id="heart-supercat-chips"></div>
+
+        <!-- 若在這裡點選「＋建立新大類」時展開 -->
+        <div id="heart-new-supercat-box" class="hidden" style="background:#F7EFE5; padding:10px; border-radius:12px; margin-top:8px;">
+          <input type="text" id="heart-new-supercat-name" class="text-input" placeholder="輸入新大類名稱（例：秋季）" />
+          <div style="font-size:11px; color:var(--text-muted); margin-top:6px;">選擇該大類頁面底色：</div>
+          <div class="palette-row" id="heart-supercat-palette"></div>
+          <button type="button" class="soft-btn" id="btn-heart-create-supercat" style="margin-top:8px; width:100%;">確認建立此大類</button>
+        </div>
+
+        <div style="font-size:12px; color:var(--text-muted); margin:10px 0 6px;">第二階：輸入新搭配資料夾名稱</div>
+        <input type="text" id="heart-new-folder-name" class="text-input" placeholder="例如：Look 1 咖啡色系約會" />
+        <button type="button" class="submit-full-btn" id="btn-heart-create-folder">建立資料夾並加入此服裝</button>
+      </div>
+    </div>
+
+    <!-- ================= 彈窗 C：創建搭配大類（標號6圖） ================= -->
+    <div id="modal-create-supercat" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title">建立搭配大類</h3>
+          <button class="modal-close-btn" data-close="modal-create-supercat">✕</button>
+        </div>
+        <span class="form-section-label">大類名稱</span>
+        <input type="text" id="input-supercat-name" class="text-input" placeholder="例如：秋季、上班穿搭、旅行" />
+
+        <span class="form-section-label">頁面底色設定（打開此大類時底色會跟著改變）</span>
+        <div class="palette-row" id="supercat-color-palette"></div>
+        <div style="margin-top:8px; display:flex; align-items:center; gap:8px; font-size:12px;">
+          <span>自訂調色：</span>
+          <input type="color" id="input-supercat-custom-color" value="#FAF5EE" />
+        </div>
+
+        <button type="button" class="submit-full-btn" id="btn-save-supercat">建立大類</button>
+      </div>
+    </div>
+
+    <!-- ================= 彈窗 D：新建搭配資料夾（標號7圖） ================= -->
+    <div id="modal-create-folder" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title">建立搭配資料夾</h3>
+          <button class="modal-close-btn" data-close="modal-create-folder">✕</button>
+        </div>
+        <span class="form-section-label">資料夾名稱</span>
+        <input type="text" id="input-folder-name" class="text-input" placeholder="例如：Look 1" />
+
+        <span class="form-section-label">挑選服裝（可不選直接建立空資料夾）</span>
+        <button type="button" class="soft-btn" id="btn-folder-pick-from-wardrobe" style="width:100%; padding:10px;">
+          👗 前往衣櫃區選取服裝（已選 <span id="draft-folder-picked-count">0</span> 件）
+        </button>
+
+        <button type="button" class="submit-full-btn" id="btn-save-folder">完成建立</button>
+      </div>
+    </div>
+
+    <!-- ================= 彈窗 E：創建選擇器 / 移動資料夾 ================= -->
+    <div id="modal-choice" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title" id="choice-modal-title">選擇操作</h3>
+          <button class="modal-close-btn" data-close="modal-choice">✕</button>
+        </div>
+        <div id="choice-modal-body" style="display:flex; flex-direction:column; gap:10px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* =================================================================
+       1. 基礎資料定義（分類、款式、顏色、預設色盤）
+    ================================================================= */
+    const WARDROBE_SCHEMA = {
+      '外套': ['長袖外', '短袖外', '背心外', '罩衫'],
+      '上衣': ['長袖', '短袖', '背心', '平口'],
+      '下裝': ['短褲', '長褲', '短裙', '長裙', '褲裙', '內搭褲'],
+      '洋裝': ['短洋裝', '長洋裝'],
+      '鞋襪': ['襪子', '布鞋', '靴子', '跟鞋', '拖鞋', '皮鞋'],
+      '配件': ['帽子', '髮飾', '耳環', '項鍊', '手飾', '包包', '腰帶', '其他']
+    };
+
+    const COLORS = [
+      { name: '白', hex: '#FFFFFF' },
+      { name: '黑', hex: '#262322' },
+      { name: '粉', hex: '#F3B8C8' },
+      { name: '紅', hex: '#C84B4B' },
+      { name: '橙', hex: '#E38846' },
+      { name: '黃', hex: '#F0CF65' },
+      { name: '綠', hex: '#6F9A76' },
+      { name: '藍', hex: '#5D88B8' },
+      { name: '紫', hex: '#9A78B8' },
+      { name: '咖', hex: '#7A543E' },
+      { name: '灰', hex: '#9E9E9E' }
+    ];
+
+    const BG_PALETTE = [
+      '#FAF5EE', '#F5E6D8', '#EFE2E4', '#E5ECE6',
+      '#E4EBF2', '#EDE6F2', '#F4EDD8', '#EAE2D6'
+    ];
+
+    /* =================================================================
+       2. IndexedDB 本機資料庫（可儲存大量手機相簿高畫質圖片）
+    ================================================================= */
+    const DB_NAME = 'MyWardrobeDB_v1';
+    const DB_VERSION = 1;
+    let db = null;
+
+    function openDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onupgradeneeded = (e) => {
+          const database = e.target.result;
+          if (!database.objectStoreNames.contains('state')) {
+            database.createObjectStore('state');
+          }
+        };
+        req.onsuccess = (e) => {
+          db = e.target.result;
+          resolve(db);
+        };
+        req.onerror = (e) => reject(e);
+      });
+    }
+
+    async function loadAppState() {
+      await openDB();
+      return new Promise((resolve) => {
+        const tx = db.transaction('state', 'readonly');
+        const store = tx.objectStore('state');
+        const req = store.get('main');
+        req.onsuccess = () => {
+          resolve(req.result || {
+            items: [],
+            superCats: [
+              { id: 'sc_default', name: '日常搭配', bgColor: '#FAF5EE' }
+            ],
+            folders: []
+          });
+        };
+        req.onerror = () => resolve({
+          items: [],
+          superCats: [{ id: 'sc_default', name: '日常搭配', bgColor: '#FAF5EE' }],
+          folders: []
+        });
+      });
+    }
+
+    function saveAppState() {
+      if (!db) return;
+      const tx = db.transaction('state', 'readwrite');
+      tx.objectStore('state').put(appState, 'main');
+    }
+
+    /* 圖片自動壓縮成輕量高畫質 DataURL，確保手機流暢不爆記憶體 */
+    function compressImageFile(fileOrBlob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const maxDim = 900;
+            let { width, height } = img;
+            if (width > maxDim || height > maxDim) {
+              if (width > height) {
+                height = Math.round((height * maxDim) / width);
+                width = maxDim;
+              } else {
+                width = Math.round((width * maxDim) / height);
+                height = maxDim;
+              }
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', 0.82));
+          };
+          img.onerror = reject;
+          img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(fileOrBlob);
+      });
+    }
+
+    /* =================================================================
+       3. 應用程式狀態管理
+    ================================================================= */
+    let appState = {
+      items: [],
+      superCats: [{ id: 'sc_default', name: '日常搭配', bgColor: '#FAF5EE' }],
+      folders: []
+    };
+
+    const ui = {
+      view: 'home', // 'home' | 'wardrobe' | 'collections' | 'folderDetail'
+      // 衣櫃瀏覽狀態
+      activeCat: '上衣',
+      activeSubCat: null,
+      activeColor: null,
+      wardrobeEditMode: false,
+      wardrobeSelectedIds: new Set(), // 跨分類不消失
+      // 跨分類挑衣服模式（用於建立資料夾 / 資料夾內加衣服）
+      pickerMode: null, // null | { target: 'newFolder' | 'existingFolder', folderId?: string, selectedIds: Set }
+      // 建立/編輯服裝表單狀態
+      editingItemId: null,
+      formImages: [],
+      formCat: null,
+      formSubCat: null,
+      formColor: null,
+      // 愛心加入搭配彈窗狀態
+      heartItemId: null,
+      heartSelectedSuperCatId: null,
+      heartNewSuperCatColor: '#FAF5EE',
+      // 收藏／我的搭配狀態
+      activeSuperCatId: 'sc_default',
+      colEditMode: false,
+      colSelectedFolderIds: new Set(),
+      // 資料夾內頁狀態
+      activeFolderId: null,
+      folderEditMode: false,
+      folderSelectedItemIds: new Set(),
+      // 新建大類／資料夾暫存
+      newSuperCatColor: '#FAF5EE',
+      draftFolderName: '',
+      draftFolderItemIds: new Set()
+    };
+
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(el._timer);
+      el._timer = setTimeout(() => el.classList.remove('show'), 2200);
+    }
+
+    /* =================================================================
+       4. 視圖切換控制
+    ================================================================= */
+    function switchView(nextView) {
+      ui.view = nextView;
+      ['home-view', 'wardrobe-view', 'collections-view', 'folder-detail-view'].forEach(id => {
+        document.getElementById(id).classList.add('hidden');
+      });
+
+      const bottomNav = document.getElementById('bottom-nav-wrapper');
+      if (nextView === 'home') {
+        document.getElementById('home-view').classList.remove('hidden');
+        bottomNav.classList.remove('collapsed');
+      } else {
+        bottomNav.classList.add('collapsed');
+      }
+
+      if (nextView === 'wardrobe') {
+        document.getElementById('wardrobe-view').classList.remove('hidden');
+        renderWardrobeView();
+      } else if (nextView === 'collections') {
+        document.getElementById('collections-view').classList.remove('hidden');
+        renderCollectionsView();
+      } else if (nextView === 'folderDetail') {
+        document.getElementById('folder-detail-view').classList.remove('hidden');
+        renderFolderDetailView();
+      }
+    }
+
+    /* =================================================================
+       5. 雙圖自動循環輪播計時器
+    ================================================================= */
+    let slideTick = 0;
+    setInterval(() => {
+      slideTick++;
+      document.querySelectorAll('.dual-slider').forEach(box => {
+        const imgs = box.querySelectorAll('img');
+        const dots = box.querySelectorAll('.slide-dot');
+        if (imgs.length < 2) return;
+        const idx = slideTick % imgs.length;
+        imgs.forEach((im, i) => im.classList.toggle('slide-hidden', i !== idx));
+        dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+      });
+    }, 2400);
+
+    /* =================================================================
+       6. 衣櫃分類抽屜與網格渲染（標號2圖）
+    ================================================================= */
+    function renderWardrobeView() {
+      // 頂部主分類頁籤（方便跨分類勾選）
+      const catTabsEl = document.getElementById('drawer-cat-tabs');
+      catTabsEl.innerHTML = '';
+      Object.keys(WARDROBE_SCHEMA).forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = 'drawer-cat-tab' + (ui.activeCat === cat ? ' active' : '');
+        btn.textContent = cat;
+        btn.onclick = () => {
+          ui.activeCat = cat;
+          ui.activeSubCat = null; // 切換主分類時重置款式篩選，但保留勾選狀態
+          renderWardrobeView();
+        };
+        catTabsEl.appendChild(btn);
+      });
+
+      // 上排：款式分類
+      const subRowEl = document.getElementById('drawer-subcat-row');
+      subRowEl.innerHTML = '';
+      (WARDROBE_SCHEMA[ui.activeCat] || []).forEach(sub => {
+        const chip = document.createElement('button');
+        chip.className = 'subcat-chip' + (ui.activeSubCat === sub ? ' active' : '');
+        chip.textContent = sub;
+        chip.onclick = () => {
+          ui.activeSubCat = (ui.activeSubCat === sub) ? null : sub;
+          renderWardrobeView();
+        };
+        subRowEl.appendChild(chip);
+      });
+
+      // 下排：顏色分類
+      const colorRowEl = document.getElementById('drawer-color-row');
+      colorRowEl.innerHTML = '';
+      COLORS.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = 'color-dot-btn' + (ui.activeColor === c.name ? ' active' : '');
+        btn.innerHTML = `
+          <span class="color-swatch" style="background:${c.hex};"></span>
+          <span class="color-dot-label">${c.name}</span>
+        `;
+        btn.onclick = () => {
+          ui.activeColor = (ui.activeColor === c.name) ? null : c.name;
+          renderWardrobeView();
+        };
+        colorRowEl.appendChild(btn);
+      });
+
+      // 挑衣服模式提示條
+      const pickerBanner = document.getElementById('wardrobe-picker-banner');
+      const floatControls = document.getElementById('wardrobe-floating-controls');
+      if (ui.pickerMode) {
+        pickerBanner.classList.remove('hidden');
+        floatControls.classList.add('hidden');
+        document.getElementById('picker-banner-text').textContent =
+          `已選取 ${ui.pickerMode.selectedIds.size} 件服裝（可切換分類多選）`;
+      } else {
+        pickerBanner.classList.add('hidden');
+        floatControls.classList.remove('hidden');
+      }
+
+      // 編輯模式控制鈕狀態
+      const editBtn = document.getElementById('btn-wardrobe-edit');
+      const editActions = document.getElementById('wardrobe-edit-actions');
+      editBtn.classList.toggle('active', ui.wardrobeEditMode);
+      editActions.classList.toggle('hidden', !ui.wardrobeEditMode);
+
+      // 篩選條件（連動邏輯）
+      const filtered = appState.items.filter(item => {
+        if (item.category !== ui.activeCat) return false;
+        if (ui.activeSubCat && item.subCategory !== ui.activeSubCat) return false;
+        if (ui.activeColor && item.color !== ui.activeColor) return false;
+        return true;
+      });
+
+      const gridEl = document.getElementById('wardrobe-grid');
+      const emptyEl = document.getElementById('wardrobe-empty');
+      gridEl.innerHTML = '';
+
+      if (filtered.length === 0) {
+        emptyEl.classList.remove('hidden');
+        return;
+      }
+      emptyEl.classList.add('hidden');
+
+      filtered.forEach(item => {
+        const card = createClothingCardElement(item, {
+          showHeart: !ui.pickerMode && !ui.wardrobeEditMode,
+          showCheckbox: Boolean(ui.pickerMode) || ui.wardrobeEditMode,
+          isChecked: ui.pickerMode
+            ? ui.pickerMode.selectedIds.has(item.id)
+            : ui.wardrobeSelectedIds.has(item.id),
+          onToggleCheck: () => {
+            const targetSet = ui.pickerMode ? ui.pickerMode.selectedIds : ui.wardrobeSelectedIds;
+            if (targetSet.has(item.id)) targetSet.delete(item.id);
+            else targetSet.add(item.id);
+            renderWardrobeView();
+          },
+          onClickHeart: () => openHeartModal(item.id)
+        });
+        gridEl.appendChild(card);
+      });
+    }
+
+    function createClothingCardElement(item, opts) {
+      const card = document.createElement('div');
+      card.className = 'item-card';
+
+      const imgsHtml = item.images.map((src, idx) =>
+        `<img src="${src}" class="${idx > 0 ? 'slide-hidden' : ''}" alt="服裝圖" />`
+      ).join('');
+
+      const dotsHtml = item.images.length > 1
+        ? `<div class="slide-dots">
+             <span class="slide-dot active"></span>
+             <span class="slide-dot"></span>
+           </div>`
+        : '';
+
+      const tagsHtml = (item.tags && item.tags.length > 0)
+        ? item.tags.map(t => `<span class="tag-pill">#${escapeHtml(t)}</span>`).join('')
+        : `<span style="font-size:10px; color:#B7A292;">${item.subCategory || ''}・${item.color || ''}</span>`;
+
+      card.innerHTML = `
+        <div class="item-img-box ${item.images.length > 1 ? 'dual-slider' : ''}">
+          ${imgsHtml}
+          ${dotsHtml}
+          ${opts.showHeart ? `<button class="card-heart-btn" title="加入我的搭配">♥</button>` : ''}
+          ${opts.showCheckbox ? `<div class="card-checkbox ${opts.isChecked ? 'checked' : ''}">${opts.isChecked ? '✓' : ''}</div>` : ''}
+        </div>
+        <div class="item-tags-area">${tagsHtml}</div>
+      `;
+
+      if (opts.showHeart) {
+        card.querySelector('.card-heart-btn').onclick = (e) => {
+          e.stopPropagation();
+          opts.onClickHeart();
+        };
+      }
+      if (opts.showCheckbox) {
+        card.onclick = () => opts.onToggleCheck();
+      }
+      return card;
+    }
+
+    /* =================================================================
+       7. 新增／編輯服裝視窗（標號3圖）
+    ================================================================= */
+    function openCreateItemModal(editItem = null) {
+      ui.editingItemId = editItem ? editItem.id : null;
+      ui.formImages = editItem ? [...editItem.images] : [];
+      ui.formCat = editItem ? editItem.category : (ui.view === 'wardrobe' ? ui.activeCat : '上衣');
+      ui.formSubCat = editItem ? editItem.subCategory : null;
+      ui.formColor = editItem ? editItem.color : null;
+
+      document.getElementById('create-item-modal-title').textContent =
+        editItem ? '編輯服裝檔案' : '新增服裝至衣櫃';
+      document.getElementById('btn-save-item').textContent =
+        editItem ? '儲存修改' : '加入衣櫃';
+      document.getElementById('form-tags-input').value =
+        editItem && editItem.tags ? editItem.tags.join(' ') : '';
+
+      renderCreateItemForm();
+      document.getElementById('modal-create-item').classList.remove('hidden');
+    }
+
+    function renderCreateItemForm() {
+      // 渲染左側最多兩張預覽圖
+      [0, 1].forEach(idx => {
+        const slot = document.getElementById(`slot-preview-${idx}`);
+        const src = ui.formImages[idx];
+        if (src) {
+          slot.innerHTML = `
+            <img src="${src}" alt="預覽${idx + 1}" />
+            <button type="button" class="remove-slot-img" data-idx="${idx}">✕</button>
+          `;
+          slot.querySelector('.remove-slot-img').onclick = () => {
+            ui.formImages.splice(idx, 1);
+            renderCreateItemForm();
+          };
+        } else {
+          slot.innerHTML = `<span>第 ${idx + 1} 張<br>${idx === 0 ? '(主圖)' : '(細節/背面)'}</span>`;
+        }
+      });
+
+      // 第一階分類
+      const catWrap = document.getElementById('form-cat-chips');
+      catWrap.innerHTML = '';
+      Object.keys(WARDROBE_SCHEMA).forEach(cat => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'select-chip' + (ui.formCat === cat ? ' active' : '');
+        chip.textContent = cat;
+        chip.onclick = () => {
+          ui.formCat = cat;
+          ui.formSubCat = null;
+          renderCreateItemForm();
+        };
+        catWrap.appendChild(chip);
+      });
+
+      // 第二階款式（選完第一階後出現）
+      const subSec = document.getElementById('form-subcat-section');
+      const subWrap = document.getElementById('form-subcat-chips');
+      if (ui.formCat && WARDROBE_SCHEMA[ui.formCat]) {
+        subSec.classList.remove('hidden');
+        subWrap.innerHTML = '';
+        WARDROBE_SCHEMA[ui.formCat].forEach(sub => {
+          const chip = document.createElement('button');
+          chip.type = 'button';
+          chip.className = 'select-chip' + (ui.formSubCat === sub ? ' active' : '');
+          chip.textContent = sub;
+          chip.onclick = () => {
+            ui.formSubCat = sub;
+            renderCreateItemForm();
+          };
+          subWrap.appendChild(chip);
+        });
+      } else {
+        subSec.classList.add('hidden');
+      }
+
+      // 顏色選擇
+      const colorWrap = document.getElementById('form-color-chips');
+      colorWrap.innerHTML = '';
+      COLORS.forEach(c => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'color-choice-btn' + (ui.formColor === c.name ? ' active' : '');
+        btn.innerHTML = `<span class="mini-dot" style="background:${c.hex};"></span><span>${c.name}</span>`;
+        btn.onclick = () => {
+          ui.formColor = c.name;
+          renderCreateItemForm();
+        };
+        colorWrap.appendChild(btn);
+      });
+    }
+
+    async function appendImagesToForm(fileList) {
+      for (const file of fileList) {
+        if (ui.formImages.length >= 2) {
+          showToast('最多只能加入 2 張圖片喔！');
+          break;
+        }
+        if (!file.type.startsWith('image/')) continue;
+        const dataUrl = await compressImageFile(file);
+        ui.formImages.push(dataUrl);
+      }
+      renderCreateItemForm();
+    }
+
+    /* =================================================================
+       8. 愛心加入／建立我的搭配（標號4圖）
+    ================================================================= */
+    function openHeartModal(itemId) {
+      ui.heartItemId = itemId;
+      ui.heartSelectedSuperCatId = appState.superCats[0]?.id || null;
+      document.getElementById('heart-new-supercat-box').classList.add('hidden');
+      document.getElementById('heart-new-folder-name').value = '';
+      renderHeartModal();
+      document.getElementById('modal-heart-action').classList.remove('hidden');
+    }
+
+    function renderHeartModal() {
+      // 上半部：現有資料夾（可直接點選加入）
+      const existWrap = document.getElementById('heart-existing-folders');
+      existWrap.innerHTML = '';
+      if (appState.folders.length === 0) {
+        existWrap.innerHTML = `<span style="font-size:12px; color:var(--text-muted);">目前尚無搭配資料夾，請從下方建立</span>`;
+      } else {
+        appState.folders.forEach(f => {
+          const sc = appState.superCats.find(s => s.id === f.superCatId);
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'select-chip';
+          btn.textContent = `${sc ? `[${sc.name}] ` : ''}${f.name}`;
+          btn.onclick = () => {
+            if (!f.itemIds.includes(ui.heartItemId)) {
+              f.itemIds.push(ui.heartItemId);
+              saveAppState();
+              showToast(`已加入「${f.name}」`);
+            } else {
+              showToast(`這件衣服已經在「${f.name}」裡囉`);
+            }
+            document.getElementById('modal-heart-action').classList.add('hidden');
+          };
+          existWrap.appendChild(btn);
+        });
+      }
+
+      // 下半部第一階：選擇大類 或 ＋建立新分類
+      const scWrap = document.getElementById('heart-supercat-chips');
+      scWrap.innerHTML = '';
+      appState.superCats.forEach(sc => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'select-chip' + (ui.heartSelectedSuperCatId === sc.id ? ' active' : '');
+        chip.textContent = sc.name;
+        chip.onclick = () => {
+          ui.heartSelectedSuperCatId = sc.id;
+          document.getElementById('heart-new-supercat-box').classList.add('hidden');
+          renderHeartModal();
+        };
+        scWrap.appendChild(chip);
+      });
+
+      const addScBtn = document.createElement('button');
+      addScBtn.type = 'button';
+      addScBtn.className = 'select-chip';
+      addScBtn.style.borderStyle = 'dashed';
+      addScBtn.textContent = '＋ 建立新大類';
+      addScBtn.onclick = () => {
+        document.getElementById('heart-new-supercat-box').classList.toggle('hidden');
+      };
+      scWrap.appendChild(addScBtn);
+
+      // 新大類調色盤
+      const palEl = document.getElementById('heart-supercat-palette');
+      palEl.innerHTML = '';
+      BG_PALETTE.forEach(hex => {
+        const dot = document.createElement('button');
+        dot.type = 'button';
+        dot.className = 'bg-swatch-btn' + (ui.heartNewSuperCatColor === hex ? ' active' : '');
+        dot.style.background = hex;
+        dot.onclick = () => {
+          ui.heartNewSuperCatColor = hex;
+          renderHeartModal();
+        };
+        palEl.appendChild(dot);
+      });
+    }
+
+    /* =================================================================
+       9. 收藏／我的搭配總覽與資料夾內頁（標號5、6、7、8圖）
+    ================================================================= */
+    function renderCollectionsView() {
+      const currentSc = appState.superCats.find(s => s.id === ui.activeSuperCatId) || appState.superCats[0];
+      ui.activeSuperCatId = currentSc.id;
+
+      const viewEl = document.getElementById('collections-view');
+      viewEl.style.backgroundColor = currentSc.bgColor || '#FAF5EE';
+      document.getElementById('current-supercat-label').textContent = `大類：${currentSc.name}`;
+
+      // 編輯模式控制鈕
+      document.getElementById('btn-col-edit').classList.toggle('active', ui.colEditMode);
+      document.getElementById('col-edit-actions').classList.toggle('hidden', !ui.colEditMode);
+
+      const folders = appState.folders.filter(f => f.superCatId === currentSc.id);
+      const gridEl = document.getElementById('folders-grid');
+      const emptyEl = document.getElementById('folders-empty');
+      gridEl.innerHTML = '';
+
+      if (folders.length === 0) {
+        emptyEl.classList.remove('hidden');
+        return;
+      }
+      emptyEl.classList.add('hidden');
+
+      folders.forEach(folder => {
+        // 取得最多前 3 張服裝主圖做拼貼封面
+        const coverImgs = folder.itemIds
+          .map(id => appState.items.find(it => it.id === id)?.images?.[0])
+          .filter(Boolean)
+          .slice(0, 3);
+
+        const card = document.createElement('div');
+        card.className = 'folder-card';
+        const isChecked = ui.colSelectedFolderIds.has(folder.id);
+
+        card.innerHTML = `
+          <div class="folder-collage count-${coverImgs.length}">
+            ${coverImgs.length === 0 ? '👗' : coverImgs.map(src => `<img src="${src}" alt="封面" />`).join('')}
+            ${ui.colEditMode ? `<div class="card-checkbox ${isChecked ? 'checked' : ''}">${isChecked ? '✓' : ''}</div>` : ''}
+          </div>
+          <div class="folder-name">${escapeHtml(folder.name)}</div>
+        `;
+
+        card.onclick = () => {
+          if (ui.colEditMode) {
+            if (ui.colSelectedFolderIds.has(folder.id)) ui.colSelectedFolderIds.delete(folder.id);
+            else ui.colSelectedFolderIds.add(folder.id);
+            renderCollectionsView();
+          } else {
+            ui.activeFolderId = folder.id;
+            ui.folderEditMode = false;
+            ui.folderSelectedItemIds.clear();
+            switchView('folderDetail');
+          }
+        };
+        gridEl.appendChild(card);
+      });
+    }
+
+    function renderSuperCatPopover() {
+      const listEl = document.getElementById('supercat-popover-list');
+      listEl.innerHTML = '';
+      appState.superCats.forEach(sc => {
+        const row = document.createElement('div');
+        row.className = 'category-popover-item' + (sc.id === ui.activeSuperCatId ? ' active' : '');
+        row.innerHTML = `
+          <span class="cat-color-badge" style="background:${sc.bgColor};"></span>
+          <span>${escapeHtml(sc.name)}</span>
+        `;
+        row.onclick = () => {
+          ui.activeSuperCatId = sc.id;
+          ui.colEditMode = false;
+          ui.colSelectedFolderIds.clear();
+          document.getElementById('supercat-popover').classList.add('hidden');
+          renderCollectionsView();
+        };
+        listEl.appendChild(row);
+      });
+    }
+
+    function renderFolderDetailView() {
+      const folder = appState.folders.find(f => f.id === ui.activeFolderId);
+      if (!folder) {
+        switchView('collections');
+        return;
+      }
+      const sc = appState.superCats.find(s => s.id === folder.superCatId);
+      document.getElementById('folder-detail-view').style.backgroundColor = sc?.bgColor || '#FAF5EE';
+      document.getElementById('folder-detail-title').textContent = folder.name;
+
+      const folderItems = folder.itemIds
+        .map(id => appState.items.find(it => it.id === id))
+        .filter(Boolean);
+
+      document.getElementById('folder-detail-count').textContent = `${folderItems.length} 件單品`;
+      document.getElementById('btn-folder-edit').classList.toggle('active', ui.folderEditMode);
+      document.getElementById('folder-edit-actions').classList.toggle('hidden', !ui.folderEditMode);
+
+      const gridEl = document.getElementById('folder-items-grid');
+      const emptyEl = document.getElementById('folder-items-empty');
+      gridEl.innerHTML = '';
+
+      if (folderItems.length === 0) {
+        emptyEl.classList.remove('hidden');
+        return;
+      }
+      emptyEl.classList.add('hidden');
+
+      folderItems.forEach(item => {
+        const card = createClothingCardElement(item, {
+          showHeart: false,
+          showCheckbox: ui.folderEditMode,
+          isChecked: ui.folderSelectedItemIds.has(item.id),
+          onToggleCheck: () => {
+            if (ui.folderSelectedItemIds.has(item.id)) ui.folderSelectedItemIds.delete(item.id);
+            else ui.folderSelectedItemIds.add(item.id);
+            renderFolderDetailView();
+          }
+        });
+        gridEl.appendChild(card);
+      });
+    }
+
+    function openCreateSuperCatModal() {
+      ui.newSuperCatColor = '#FAF5EE';
+      document.getElementById('input-supercat-name').value = '';
+      document.getElementById('input-supercat-custom-color').value = '#FAF5EE';
+      renderSuperCatPalette();
+      document.getElementById('modal-create-supercat').classList.remove('hidden');
+    }
+
+    function renderSuperCatPalette() {
+      const pal = document.getElementById('supercat-color-palette');
+      pal.innerHTML = '';
+      BG_PALETTE.forEach(hex => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'bg-swatch-btn' + (ui.newSuperCatColor === hex ? ' active' : '');
+        btn.style.background = hex;
+        btn.onclick = () => {
+          ui.newSuperCatColor = hex;
+          document.getElementById('input-supercat-custom-color').value = hex;
+          renderSuperCatPalette();
+        };
+        pal.appendChild(btn);
+      });
+    }
+
+    function openCreateFolderModal(preserveDraft = false) {
+      if (!preserveDraft) {
+        ui.draftFolderName = '';
+        ui.draftFolderItemIds = new Set();
+      }
+      document.getElementById('input-folder-name').value = ui.draftFolderName;
+      document.getElementById('draft-folder-picked-count').textContent = ui.draftFolderItemIds.size;
+      document.getElementById('modal-create-folder').classList.remove('hidden');
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    /* =================================================================
+       10. 事件綁定初始化
+    ================================================================= */
+    document.addEventListener('DOMContentLoaded', async () => {
+      appState = await loadAppState();
+
+      // 通用彈窗關閉鈕
+      document.querySelectorAll('[data-close]').forEach(btn => {
+        btn.onclick = () => {
+          document.getElementById(btn.dataset.close).classList.add('hidden');
+        };
+      });
+
+      // 首頁下方分類按鈕 -> 展開抽屜分類頁
+      document.querySelectorAll('.nav-cat-btn').forEach(btn => {
+        btn.onclick = () => {
+          ui.activeCat = btn.dataset.cat;
+          ui.activeSubCat = null;
+          ui.activeColor = null;
+          ui.wardrobeEditMode = false;
+          ui.wardrobeSelectedIds.clear();
+          switchView('wardrobe');
+        };
+      });
+
+      // 首頁下方加號 -> 新增服裝
+      document.getElementById('btn-open-create-item').onclick = () => openCreateItemModal(null);
+
+      // 首頁右上角愛心 -> 我的搭配
+      document.getElementById('btn-open-collections').onclick = () => {
+        ui.colEditMode = false;
+        ui.colSelectedFolderIds.clear();
+        switchView('collections');
+      };
+
+      // 衣櫃頁返回 & 一鍵置頂
+      document.getElementById('btn-wardrobe-back').onclick = () => {
+        if (ui.pickerMode) {
+          const prevTarget = ui.pickerMode.target;
+          ui.pickerMode = null;
+          if (prevTarget === 'newFolder') {
+            switchView('collections');
+            openCreateFolderModal(true);
+          } else {
+            switchView('folderDetail');
+          }
+          return;
+        }
+        ui.wardrobeEditMode = false;
+        ui.wardrobeSelectedIds.clear();
+        switchView('home');
+      };
+
+      document.getElementById('btn-wardrobe-top').onclick = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      // 衣櫃頁左下編輯模式
+      document.getElementById('btn-wardrobe-edit').onclick = () => {
+        ui.wardrobeEditMode = !ui.wardrobeEditMode;
+        if (!ui.wardrobeEditMode) ui.wardrobeSelectedIds.clear();
+        renderWardrobeView();
+      };
+
+      // 衣櫃批量刪除
+      document.getElementById('btn-wardrobe-delete').onclick = () => {
+        if (ui.wardrobeSelectedIds.size === 0) {
+          showToast('請先勾選要刪除的服裝');
+          return;
+        }
+        const delSet = ui.wardrobeSelectedIds;
+        appState.items = appState.items.filter(it => !delSet.has(it.id));
+        // 同步從所有搭配資料夾中移除已刪除的 ID
+        appState.folders.forEach(f => {
+          f.itemIds = f.itemIds.filter(id => !delSet.has(id));
+        });
+        delSet.clear();
+        ui.wardrobeEditMode = false;
+        saveAppState();
+        renderWardrobeView();
+        showToast('已刪除所選服裝');
+      };
+
+      // 衣櫃編輯單件檔案
+      document.getElementById('btn-wardrobe-edit-item').onclick = () => {
+        if (ui.wardrobeSelectedIds.size !== 1) {
+          showToast('請勾選 1 件服裝來編輯檔案');
+          return;
+        }
+        const [targetId] = [...ui.wardrobeSelectedIds];
+        const targetItem = appState.items.find(it => it.id === targetId);
+        if (targetItem) openCreateItemModal(targetItem);
+      };
+
+      // 挑衣服模式「完成選取」
+      document.getElementById('btn-confirm-picker').onclick = () => {
+        if (!ui.pickerMode) return;
+        const picked = [...ui.pickerMode.selectedIds];
+        const target = ui.pickerMode.target;
+        const folderId = ui.pickerMode.folderId;
+        ui.pickerMode = null;
+
+        if (target === 'newFolder') {
+          ui.draftFolderItemIds = new Set(picked);
+          switchView('collections');
+          openCreateFolderModal(true);
+        } else if (target === 'existingFolder') {
+          const folder = appState.folders.find(f => f.id === folderId);
+          if (folder) {
+            picked.forEach(id => {
+              if (!folder.itemIds.includes(id)) folder.itemIds.push(id);
+            });
+            saveAppState();
+            showToast(`已加入 ${picked.length} 件服裝`);
+          }
+          switchView('folderDetail');
+        }
+      };
+
+      // 相簿選圖 & 剪貼簿貼圖
+      document.getElementById('btn-pick-album').onclick = () => {
+        document.getElementById('file-input-album').click();
+      };
+      document.getElementById('file-input-album').onchange = async (e) => {
+        await appendImagesToForm(e.target.files);
+        e.target.value = '';
+      };
+
+      document.getElementById('btn-paste-img').onclick = async () => {
+        try {
+          const clipboardItems = await navigator.clipboard.read();
+          let found = false;
+          for (const cItem of clipboardItems) {
+            const imgType = cItem.types.find(t => t.startsWith('image/'));
+            if (imgType) {
+              const blob = await cItem.getType(imgType);
+              await appendImagesToForm([blob]);
+              found = true;
+            }
+          }
+          if (!found) showToast('剪貼簿裡目前沒有圖片喔');
+        } catch (err) {
+          showToast('請長按輸入框貼上圖片，或允許剪貼簿權限');
+        }
+      };
+
+      // 也支援在建立視窗直接 Ctrl+V / 貼上圖片
+      document.addEventListener('paste', async (e) => {
+        if (document.getElementById('modal-create-item').classList.contains('hidden')) return;
+        const files = e.clipboardData?.files;
+        if (files && files.length > 0) {
+          await appendImagesToForm(files);
+        }
+      });
+
+      // 儲存新服裝／修改服裝
+      document.getElementById('btn-save-item').onclick = () => {
+        if (ui.formImages.length === 0) {
+          showToast('請至少加入 1 張服裝圖片');
+          return;
+        }
+        if (!ui.formCat || !ui.formSubCat) {
+          showToast('請完成第一階與第二階分類選擇');
+          return;
+        }
+        if (!ui.formColor) {
+          showToast('請選擇服裝顏色');
+          return;
+        }
+
+        const rawTags = document.getElementById('form-tags-input').value.trim();
+        const tags = rawTags
+          ? rawTags.split(/[\s,，#]+/).map(s => s.trim()).filter(Boolean)
+          : [];
+
+        if (ui.editingItemId) {
+          const item = appState.items.find(it => it.id === ui.editingItemId);
+          if (item) {
+            item.images = [...ui.formImages];
+            item.category = ui.formCat;
+            item.subCategory = ui.formSubCat;
+            item.color = ui.formColor;
+            item.tags = tags;
+          }
+          ui.wardrobeEditMode = false;
+          ui.wardrobeSelectedIds.clear();
+          showToast('已更新服裝檔案');
+        } else {
+          appState.items.unshift({
+            id: 'item_' + Date.now(),
+            images: [...ui.formImages],
+            category: ui.formCat,
+            subCategory: ui.formSubCat,
+            color: ui.formColor,
+            tags,
+            createdAt: Date.now()
+          });
+          showToast(`已加入「${ui.formCat}・${ui.formSubCat}」`);
+        }
+
+        saveAppState();
+        document.getElementById('modal-create-item').classList.add('hidden');
+        if (ui.view === 'wardrobe') renderWardrobeView();
+      };
+
+      // 愛心彈窗：快速建立新大類
+      document.getElementById('btn-heart-create-supercat').onclick = () => {
+        const name = document.getElementById('heart-new-supercat-name').value.trim();
+        if (!name) {
+          showToast('請輸入新大類名稱');
+          return;
+        }
+        const newSc = {
+          id: 'sc_' + Date.now(),
+          name,
+          bgColor: ui.heartNewSuperCatColor
+        };
+        appState.superCats.push(newSc);
+        ui.heartSelectedSuperCatId = newSc.id;
+        saveAppState();
+        document.getElementById('heart-new-supercat-name').value = '';
+        document.getElementById('heart-new-supercat-box').classList.add('hidden');
+        renderHeartModal();
+        showToast(`已建立大類「${name}」`);
+      };
+
+      // 愛心彈窗：建立搭配資料夾並加入此服裝
+      document.getElementById('btn-heart-create-folder').onclick = () => {
+        const folderName = document.getElementById('heart-new-folder-name').value.trim();
+        if (!ui.heartSelectedSuperCatId) {
+          showToast('請先選擇大類');
+          return;
+        }
+        if (!folderName) {
+          showToast('請輸入搭配資料夾名稱');
+          return;
+        }
+        appState.folders.unshift({
+          id: 'fld_' + Date.now(),
+          superCatId: ui.heartSelectedSuperCatId,
+          name: folderName,
+          itemIds: [ui.heartItemId]
+        });
+        saveAppState();
+        document.getElementById('modal-heart-action').classList.add('hidden');
+        showToast(`已建立「${folderName}」並加入服裝`);
+      };
+
+      // 收藏／我的搭配頁導覽
+      document.getElementById('btn-col-back').onclick = () => {
+        document.getElementById('supercat-popover').classList.add('hidden');
+        switchView('home');
+      };
+
+      document.getElementById('btn-col-top').onclick = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      // 右上角大類目錄彈出
+      document.getElementById('btn-open-supercat-menu').onclick = (e) => {
+        e.stopPropagation();
+        const pop = document.getElementById('supercat-popover');
+        if (pop.classList.contains('hidden')) {
+          renderSuperCatPopover();
+          pop.classList.remove('hidden');
+        } else {
+          pop.classList.add('hidden');
+        }
+      };
+
+      document.getElementById('btn-popover-add-supercat').onclick = () => {
+        document.getElementById('supercat-popover').classList.add('hidden');
+        openCreateSuperCatModal();
+      };
+
+      // 左下創建按鈕（可選創建大類或資料夾）
+      document.getElementById('btn-col-create').onclick = () => {
+        document.getElementById('choice-modal-title').textContent = '創建搭配項目';
+        const body = document.getElementById('choice-modal-body');
+        body.innerHTML = `
+          <button type="button" class="soft-btn" id="choice-new-folder" style="padding:12px;">📁 新增搭配資料夾</button>
+          <button type="button" class="soft-btn" id="choice-new-supercat" style="padding:12px;">🎨 新增搭配大類（可設定頁面底色）</button>
+        `;
+        document.getElementById('choice-new-folder').onclick = () => {
+          document.getElementById('modal-choice').classList.add('hidden');
+          openCreateFolderModal(false);
+        };
+        document.getElementById('choice-new-supercat').onclick = () => {
+          document.getElementById('modal-choice').classList.add('hidden');
+          openCreateSuperCatModal();
+        };
+        document.getElementById('modal-choice').classList.remove('hidden');
+      };
+
+      // 儲存新大類
+      document.getElementById('input-supercat-custom-color').oninput = (e) => {
+        ui.newSuperCatColor = e.target.value;
+      };
+      document.getElementById('btn-save-supercat').onclick = () => {
+        const name = document.getElementById('input-supercat-name').value.trim();
+        if (!name) {
+          showToast('請輸入大類名稱');
+          return;
+        }
+        const newSc = {
+          id: 'sc_' + Date.now(),
+          name,
+          bgColor: ui.newSuperCatColor
+        };
+        appState.superCats.push(newSc);
+        ui.activeSuperCatId = newSc.id;
+        saveAppState();
+        document.getElementById('modal-create-supercat').classList.add('hidden');
+        renderCollectionsView();
+        showToast(`已建立大類「${name}」`);
+      };
+
+      // 新建資料夾 -> 前往衣櫃選取服裝
+      document.getElementById('btn-folder-pick-from-wardrobe').onclick = () => {
+        ui.draftFolderName = document.getElementById('input-folder-name').value;
+        document.getElementById('modal-create-folder').classList.add('hidden');
+        ui.pickerMode = {
+          target: 'newFolder',
+          selectedIds: new Set(ui.draftFolderItemIds)
+        };
+        ui.activeCat = '上衣';
+        ui.activeSubCat = null;
+        ui.activeColor = null;
+        switchView('wardrobe');
+      };
+
+      // 儲存新建資料夾
+      document.getElementById('btn-save-folder').onclick = () => {
+        const name = document.getElementById('input-folder-name').value.trim();
+        if (!name) {
+          showToast('請輸入資料夾名稱');
+          return;
+        }
+        appState.folders.unshift({
+          id: 'fld_' + Date.now(),
+          superCatId: ui.activeSuperCatId,
+          name,
+          itemIds: [...ui.draftFolderItemIds]
+        });
+        saveAppState();
+        document.getElementById('modal-create-folder').classList.add('hidden');
+        renderCollectionsView();
+        showToast(`已建立資料夾「${name}」`);
+      };
+
+      // 搭配資料夾編輯（刪除 / 移動至其他大類）
+      document.getElementById('btn-col-edit').onclick = () => {
+        ui.colEditMode = !ui.colEditMode;
+        if (!ui.colEditMode) ui.colSelectedFolderIds.clear();
+        renderCollectionsView();
+      };
+
+      document.getElementById('btn-col-delete').onclick = () => {
+        if (ui.colSelectedFolderIds.size === 0) {
+          showToast('請先勾選要刪除的資料夾');
+          return;
+        }
+        appState.folders = appState.folders.filter(f => !ui.colSelectedFolderIds.has(f.id));
+        ui.colSelectedFolderIds.clear();
+        ui.colEditMode = false;
+        saveAppState();
+        renderCollectionsView();
+        showToast('已刪除所選資料夾');
+      };
+
+      document.getElementById('btn-col-move').onclick = () => {
+        if (ui.colSelectedFolderIds.size === 0) {
+          showToast('請先勾選要移動的資料夾');
+          return;
+        }
+        document.getElementById('choice-modal-title').textContent = '移動至哪個大類？';
+        const body = document.getElementById('choice-modal-body');
+        body.innerHTML = '';
+        appState.superCats.forEach(sc => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'soft-btn';
+          btn.style.padding = '11px';
+          btn.textContent = sc.name;
+          btn.onclick = () => {
+            appState.folders.forEach(f => {
+              if (ui.colSelectedFolderIds.has(f.id)) f.superCatId = sc.id;
+            });
+            ui.colSelectedFolderIds.clear();
+            ui.colEditMode = false;
+            saveAppState();
+            document.getElementById('modal-choice').classList.add('hidden');
+            renderCollectionsView();
+            showToast(`已移動至「${sc.name}」`);
+          };
+          body.appendChild(btn);
+        });
+        document.getElementById('modal-choice').classList.remove('hidden');
+      };
+
+      // 資料夾內頁操作（返回、編輯移除、右下加號前往衣櫃選取）
+      document.getElementById('btn-folder-back').onclick = () => {
+        switchView('collections');
+      };
+
+      document.getElementById('btn-folder-edit').onclick = () => {
+        ui.folderEditMode = !ui.folderEditMode;
+        if (!ui.folderEditMode) ui.folderSelectedItemIds.clear();
+        renderFolderDetailView();
+      };
+
+      document.getElementById('btn-folder-remove-items').onclick = () => {
+        if (ui.folderSelectedItemIds.size === 0) {
+          showToast('請先勾選要移除的服裝');
+          return;
+        }
+        const folder = appState.folders.find(f => f.id === ui.activeFolderId);
+        if (folder) {
+          folder.itemIds = folder.itemIds.filter(id => !ui.folderSelectedItemIds.has(id));
+          saveAppState();
+        }
+        ui.folderSelectedItemIds.clear();
+        ui.folderEditMode = false;
+        renderFolderDetailView();
+        showToast('已從此搭配資料夾移除（衣櫃原檔保留）');
+      };
+
+      document.getElementById('btn-folder-add-items').onclick = () => {
+        ui.pickerMode = {
+          target: 'existingFolder',
+          folderId: ui.activeFolderId,
+          selectedIds: new Set()
+        };
+        ui.activeCat = '上衣';
+        ui.activeSubCat = null;
+        ui.activeColor = null;
+        switchView('wardrobe');
+      };
+    });
+  </script>
+</body>
+</html>
