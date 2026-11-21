@@ -117,7 +117,7 @@
       color: var(--text-muted);
     }
 
-    /* ================= 仿蕾絲花邊底部導覽區（無外框、純白細線 Icon） ================= */
+    /* ================= 仿蕾絲花邊底部導覽區 ================= */
     #bottom-nav-wrapper {
       position: fixed;
       bottom: 0;
@@ -152,7 +152,6 @@
       position: relative;
     }
 
-    /* 無框式分類按鈕 */
     .nav-cat-btn {
       background: transparent;
       border: none;
@@ -180,7 +179,6 @@
       white-space: nowrap;
     }
 
-    /* 中央凸起加號（無外框融合圓弧） */
     .nav-add-wrap {
       display: flex;
       justify-content: center;
@@ -433,7 +431,6 @@
       background: #FFF;
     }
 
-    /* 卡片右上角飽滿愛心 */
     .card-heart-btn {
       position: absolute;
       top: 6px;
@@ -451,7 +448,6 @@
       z-index: 4;
     }
 
-    /* 勾選框改至左上角 */
     .card-checkbox {
       position: absolute;
       top: 6px;
@@ -475,7 +471,6 @@
       background: var(--coffee-main);
     }
 
-    /* #tag 直接顯示在圖片左下角 */
     .item-tags-overlay {
       position: absolute;
       bottom: 5px;
@@ -848,12 +843,32 @@
       padding: 4px;
     }
 
+    .img-slot-box.has-img {
+      border-style: solid;
+      cursor: pointer;
+    }
+
     .img-slot-box img {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
+    }
+
+    .crop-hint-badge {
+      position: absolute;
+      bottom: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(59, 40, 30, 0.72);
+      color: #FFFBF5;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 99px;
+      white-space: nowrap;
+      z-index: 2;
+      pointer-events: none;
     }
 
     .remove-slot-img {
@@ -868,8 +883,85 @@
       border: none;
       font-size: 11px;
       cursor: pointer;
-      z-index: 2;
+      z-index: 3;
     }
+
+    /* ================= 圖片裁切彈窗樣式 ================= */
+    #modal-crop-img {
+      z-index: 100;
+    }
+
+    .crop-stage-wrap {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #2B1E17;
+      border-radius: 14px;
+      padding: 12px;
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    .crop-stage {
+      position: relative;
+      display: inline-block;
+      line-height: 0;
+      user-select: none;
+      touch-action: none;
+    }
+
+    .crop-stage img {
+      max-width: 100%;
+      max-height: 54dvh;
+      display: block;
+      pointer-events: none;
+    }
+
+    .crop-box {
+      position: absolute;
+      border: 2px solid #FFFBF5;
+      box-shadow: 0 0 0 9999px rgba(24, 16, 12, 0.62);
+      cursor: move;
+      touch-action: none;
+    }
+
+    /* 九宮格輔助線 */
+    .crop-box::before,
+    .crop-box::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .crop-box::before {
+      border-top: 1px dashed rgba(255, 251, 245, 0.45);
+      border-bottom: 1px dashed rgba(255, 251, 245, 0.45);
+      top: 33.33%;
+      bottom: 33.33%;
+    }
+    .crop-box::after {
+      border-left: 1px dashed rgba(255, 251, 245, 0.45);
+      border-right: 1px dashed rgba(255, 251, 245, 0.45);
+      left: 33.33%;
+      right: 33.33%;
+    }
+
+    .crop-handle {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      background: var(--lace-cream);
+      border: 2.5px solid var(--coffee-dark);
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+      z-index: 4;
+      touch-action: none;
+    }
+    .crop-handle.nw { top: -11px; left: -11px; cursor: nwse-resize; }
+    .crop-handle.ne { top: -11px; right: -11px; cursor: nesw-resize; }
+    .crop-handle.sw { bottom: -11px; left: -11px; cursor: nesw-resize; }
+    .crop-handle.se { bottom: -11px; right: -11px; cursor: nwse-resize; }
 
     .upload-btn-pair {
       display: grid;
@@ -1060,7 +1152,6 @@
     <!-- ================= 1. 首頁視圖 ================= -->
     <section id="home-view">
       <button class="top-right-fav-btn" id="btn-open-collections" title="我的搭配">
-        <!-- 飽滿愛心 SVG -->
         <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
         </svg>
@@ -1094,7 +1185,6 @@
         這個分類目前還沒有衣服喔～<br>點擊左下角「＋」加入第一件單品吧！
       </div>
 
-      <!-- 左下：快捷加號 ＋ 編輯模式（含已選取數量）｜ 右下：一鍵置頂 -->
       <div class="floating-bottom-controls" id="wardrobe-floating-controls">
         <div class="floating-left-stack">
           <button class="float-round-btn" id="btn-wardrobe-quick-add" title="新增此分類服裝">＋</button>
@@ -1141,7 +1231,6 @@
         這個大類裡還沒有搭配資料夾<br>點擊左下角「＋」建立第一個搭配吧！
       </div>
 
-      <!-- 左下加號直接開啟建立資料夾 -->
       <div class="floating-bottom-controls">
         <div class="floating-left-stack">
           <button class="float-round-btn" id="btn-col-create" title="建立搭配資料夾">＋</button>
@@ -1206,7 +1295,6 @@
       </svg>
 
       <nav class="bottom-nav-bar">
-        <!-- 外套：純白細線 Icon -->
         <button class="nav-cat-btn" data-cat="外套">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFBF5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M8 4l4 4 4-4 4 3-2 6v7H6v-7l-2-6 4-3z"/>
@@ -1215,7 +1303,6 @@
           <span class="nav-cat-label">外套</span>
         </button>
 
-        <!-- 上衣：純白細線 Icon -->
         <button class="nav-cat-btn" data-cat="上衣">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFBF5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M6.5 4h11l3 4-3 2.5-1.5-1V20h-8V9.5l-1.5 1L3.5 8l3-4z"/>
@@ -1224,7 +1311,6 @@
           <span class="nav-cat-label">上衣</span>
         </button>
 
-        <!-- 下裝：純白細線 Icon -->
         <button class="nav-cat-btn" data-cat="下裝">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFBF5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M6 4h12l1.5 16H14l-2-10-2 10H4.5L6 4z"/>
@@ -1233,7 +1319,6 @@
           <span class="nav-cat-label">下裝</span>
         </button>
 
-        <!-- 中央加號 -->
         <div class="nav-add-wrap">
           <button class="nav-add-btn" id="btn-open-create-item" title="新增服裝">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFBF5" stroke-width="1.8" stroke-linecap="round">
@@ -1243,7 +1328,6 @@
           </button>
         </div>
 
-        <!-- 洋裝：純白細線 Icon -->
         <button class="nav-cat-btn" data-cat="洋裝">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFBF5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9.5 3h5l1 5 4.5 12H3.5L8 8l1.5-5z"/>
@@ -1252,7 +1336,6 @@
           <span class="nav-cat-label">洋裝</span>
         </button>
 
-        <!-- 鞋襪：純白細線 Icon -->
         <button class="nav-cat-btn" data-cat="鞋襪">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFBF5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M4 15v3h16v-2c0-2-3-2.5-5-4l-3-5-3 2-1.5 4L4 15z"/>
@@ -1260,7 +1343,6 @@
           <span class="nav-cat-label">鞋襪</span>
         </button>
 
-        <!-- 配件：純白細線 Icon -->
         <button class="nav-cat-btn" data-cat="配件">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFBF5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <rect x="5" y="9" width="14" height="11" rx="2.5"/>
@@ -1326,6 +1408,33 @@
         </div>
 
         <button type="button" class="submit-full-btn" id="btn-save-item">加入衣櫃</button>
+      </div>
+    </div>
+
+    <!-- ================= 彈窗 A-2：圖片自由裁切（固定 3:4 長寬比） ================= -->
+    <div id="modal-crop-img" class="modal-backdrop hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title">裁切服裝圖片</h3>
+          <button class="modal-close-btn" data-close="modal-crop-img">✕</button>
+        </div>
+
+        <div class="crop-stage-wrap">
+          <div class="crop-stage" id="crop-stage">
+            <img id="crop-target-img" src="" alt="裁切預覽" />
+            <div class="crop-box" id="crop-box">
+              <div class="crop-handle nw" data-handle="nw"></div>
+              <div class="crop-handle ne" data-handle="ne"></div>
+              <div class="crop-handle sw" data-handle="sw"></div>
+              <div class="crop-handle se" data-handle="se"></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px;">
+          <button type="button" class="soft-btn" id="btn-crop-reset" style="padding:10px;">重設範圍</button>
+          <button type="button" class="submit-full-btn" id="btn-crop-confirm" style="margin-top:0;">套用裁切</button>
+        </div>
       </div>
     </div>
 
@@ -1498,7 +1607,7 @@
         reader.onload = (e) => {
           const img = new Image();
           img.onload = () => {
-            const maxDim = 900;
+            const maxDim = 1100;
             let { width, height } = img;
             if (width > maxDim || height > maxDim) {
               if (width > height) {
@@ -1514,7 +1623,7 @@
             canvas.height = height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
-            resolve(canvas.toDataURL('image/jpeg', 0.82));
+            resolve(canvas.toDataURL('image/jpeg', 0.86));
           };
           img.onerror = reject;
           img.src = e.target.result;
@@ -1540,6 +1649,7 @@
       pickerMode: null,
       editingItemId: null,
       formImages: [],
+      formRawImages: [], // 保存未裁切前的原圖，方便再次調整裁切範圍
       formCat: null,
       formSubCat: null,
       formColor: null,
@@ -1556,6 +1666,180 @@
       draftFolderName: '',
       draftFolderItemIds: new Set()
     };
+
+    /* ================= 裁切狀態（固定 3:4 比例） ================= */
+    const CROP_ASPECT = 3 / 4; // 寬 / 高
+    const cropState = {
+      slotIdx: 0,
+      stageW: 0,
+      stageH: 0,
+      x: 0,
+      y: 0,
+      w: 0,
+      h: 0,
+      mode: null, // 'move' | 'nw' | 'ne' | 'sw' | 'se'
+      startPointerX: 0,
+      startPointerY: 0,
+      startX: 0,
+      startY: 0,
+      startW: 0,
+      startH: 0
+    };
+
+    function openCropModal(slotIdx) {
+      const rawSrc = ui.formRawImages[slotIdx] || ui.formImages[slotIdx];
+      if (!rawSrc) return;
+      cropState.slotIdx = slotIdx;
+
+      const imgEl = document.getElementById('crop-target-img');
+      imgEl.onload = () => {
+        initCropBox();
+      };
+      imgEl.src = rawSrc;
+      document.getElementById('modal-crop-img').classList.remove('hidden');
+    }
+
+    function initCropBox() {
+      const imgEl = document.getElementById('crop-target-img');
+      const stageW = imgEl.clientWidth;
+      const stageH = imgEl.clientHeight;
+      if (!stageW || !stageH) return;
+
+      cropState.stageW = stageW;
+      cropState.stageH = stageH;
+
+      // 在圖片內建立最大可能的 3:4 裁切框並置中
+      let boxW = stageW * 0.86;
+      let boxH = boxW / CROP_ASPECT;
+      if (boxH > stageH * 0.86) {
+        boxH = stageH * 0.86;
+        boxW = boxH * CROP_ASPECT;
+      }
+
+      cropState.w = boxW;
+      cropState.h = boxH;
+      cropState.x = (stageW - boxW) / 2;
+      cropState.y = (stageH - boxH) / 2;
+      renderCropBox();
+    }
+
+    function renderCropBox() {
+      const boxEl = document.getElementById('crop-box');
+      boxEl.style.left = `${cropState.x}px`;
+      boxEl.style.top = `${cropState.y}px`;
+      boxEl.style.width = `${cropState.w}px`;
+      boxEl.style.height = `${cropState.h}px`;
+    }
+
+    function setupCropInteractions() {
+      const boxEl = document.getElementById('crop-box');
+
+      const onPointerDown = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const handle = e.target.dataset?.handle;
+        cropState.mode = handle || 'move';
+        cropState.startPointerX = e.clientX;
+        cropState.startPointerY = e.clientY;
+        cropState.startX = cropState.x;
+        cropState.startY = cropState.y;
+        cropState.startW = cropState.w;
+        cropState.startH = cropState.h;
+      };
+
+      const onPointerMove = (e) => {
+        if (!cropState.mode) return;
+        e.preventDefault();
+        const dx = e.clientX - cropState.startPointerX;
+        const dy = e.clientY - cropState.startPointerY;
+        const { stageW, stageH, startX, startY, startW, startH } = cropState;
+        const minW = 48;
+
+        if (cropState.mode === 'move') {
+          let nx = Math.max(0, Math.min(stageW - startW, startX + dx));
+          let ny = Math.max(0, Math.min(stageH - startH, startY + dy));
+          cropState.x = nx;
+          cropState.y = ny;
+        } else {
+          // 固定 3:4 比例縮放，依據對角錨點計算最大允許邊界
+          let anchorX, anchorY, rawW;
+          if (cropState.mode === 'se') {
+            anchorX = startX;
+            anchorY = startY;
+            rawW = startW + dx;
+          } else if (cropState.mode === 'sw') {
+            anchorX = startX + startW;
+            anchorY = startY;
+            rawW = startW - dx;
+          } else if (cropState.mode === 'ne') {
+            anchorX = startX;
+            anchorY = startY + startH;
+            rawW = startW + dx;
+          } else if (cropState.mode === 'nw') {
+            anchorX = startX + startW;
+            anchorY = startY + startH;
+            rawW = startW - dx;
+          }
+
+          const maxWByX = (cropState.mode === 'se' || cropState.mode === 'ne')
+            ? (stageW - anchorX)
+            : anchorX;
+          const maxHByY = (cropState.mode === 'se' || cropState.mode === 'sw')
+            ? (stageH - anchorY)
+            : anchorY;
+          const maxW = Math.min(maxWByX, maxHByY * CROP_ASPECT);
+
+          const clampedW = Math.max(minW, Math.min(maxW, rawW));
+          const clampedH = clampedW / CROP_ASPECT;
+
+          cropState.w = clampedW;
+          cropState.h = clampedH;
+          cropState.x = (cropState.mode === 'se' || cropState.mode === 'ne')
+            ? anchorX
+            : (anchorX - clampedW);
+          cropState.y = (cropState.mode === 'se' || cropState.mode === 'sw')
+            ? anchorY
+            : (anchorY - clampedH);
+        }
+
+        renderCropBox();
+      };
+
+      const onPointerUp = () => {
+        cropState.mode = null;
+      };
+
+      boxEl.addEventListener('pointerdown', onPointerDown);
+      window.addEventListener('pointermove', onPointerMove, { passive: false });
+      window.addEventListener('pointerup', onPointerUp);
+    }
+
+    function applyCropResult() {
+      const imgEl = document.getElementById('crop-target-img');
+      if (!imgEl.naturalWidth || !cropState.stageW) return;
+
+      const scaleX = imgEl.naturalWidth / cropState.stageW;
+      const scaleY = imgEl.naturalHeight / cropState.stageH;
+
+      const sx = Math.round(cropState.x * scaleX);
+      const sy = Math.round(cropState.y * scaleY);
+      const sw = Math.round(cropState.w * scaleX);
+      const sh = Math.round(cropState.h * scaleY);
+
+      const outW = Math.min(750, Math.max(300, sw));
+      const outH = Math.round(outW / CROP_ASPECT);
+
+      const canvas = document.createElement('canvas');
+      canvas.width = outW;
+      canvas.height = outH;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(imgEl, sx, sy, sw, sh, 0, 0, outW, outH);
+
+      ui.formImages[cropState.slotIdx] = canvas.toDataURL('image/jpeg', 0.88);
+      document.getElementById('modal-crop-img').classList.add('hidden');
+      renderCreateItemForm();
+      showToast('已套用裁切');
+    }
 
     function showToast(msg) {
       const el = document.getElementById('toast');
@@ -1752,6 +2036,7 @@
     function openCreateItemModal(editItem = null, presetCat = null) {
       ui.editingItemId = editItem ? editItem.id : null;
       ui.formImages = editItem ? [...editItem.images] : [];
+      ui.formRawImages = editItem ? [...editItem.images] : [];
       ui.formCat = editItem
         ? editItem.category
         : (presetCat || (ui.view === 'wardrobe' ? ui.activeCat : '上衣'));
@@ -1774,15 +2059,22 @@
         const slot = document.getElementById(`slot-preview-${idx}`);
         const src = ui.formImages[idx];
         if (src) {
+          slot.classList.add('has-img');
           slot.innerHTML = `
             <img src="${src}" alt="預覽${idx + 1}" />
+            <span class="crop-hint-badge">點擊裁切</span>
             <button type="button" class="remove-slot-img" data-idx="${idx}">✕</button>
           `;
-          slot.querySelector('.remove-slot-img').onclick = () => {
+          slot.onclick = () => openCropModal(idx);
+          slot.querySelector('.remove-slot-img').onclick = (e) => {
+            e.stopPropagation();
             ui.formImages.splice(idx, 1);
+            ui.formRawImages.splice(idx, 1);
             renderCreateItemForm();
           };
         } else {
+          slot.classList.remove('has-img');
+          slot.onclick = null;
           slot.innerHTML = `<span>第 ${idx + 1} 張</span>`;
         }
       });
@@ -1846,6 +2138,7 @@
         if (!file.type.startsWith('image/')) continue;
         const dataUrl = await compressImageFile(file);
         ui.formImages.push(dataUrl);
+        ui.formRawImages.push(dataUrl);
       }
       renderCreateItemForm();
     }
@@ -2093,6 +2386,10 @@
 
     document.addEventListener('DOMContentLoaded', async () => {
       appState = await loadAppState();
+      setupCropInteractions();
+
+      document.getElementById('btn-crop-reset').onclick = () => initCropBox();
+      document.getElementById('btn-crop-confirm').onclick = () => applyCropResult();
 
       document.querySelectorAll('[data-close]').forEach(btn => {
         btn.onclick = () => {
@@ -2351,7 +2648,6 @@
         openCreateSuperCatModal();
       };
 
-      // 資料夾總覽頁左下角加號直接建立資料夾
       document.getElementById('btn-col-create').onclick = () => {
         openCreateFolderModal(false);
       };
