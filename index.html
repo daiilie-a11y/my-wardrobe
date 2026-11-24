@@ -488,9 +488,9 @@
       line-height: 1.2;
       padding: 2px 5px;
       border-radius: 5px;
-      background: rgba(255, 251, 245, 0.9);
+      background: rgba(255, 251, 245, 0.92);
       color: var(--coffee-dark);
-      border: 1px solid rgba(223, 203, 183, 0.9);
+      border: 1px solid rgba(223, 203, 183, 0.95);
       max-width: 100%;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -926,7 +926,6 @@
       touch-action: none;
     }
 
-    /* 九宮格輔助線 */
     .crop-box::before,
     .crop-box::after {
       content: '';
@@ -1024,7 +1023,7 @@
     .color-grid-picker {
       display: flex;
       flex-wrap: wrap;
-      gap: 7px;
+      gap: 6px;
     }
 
     .color-choice-btn {
@@ -1065,6 +1064,23 @@
 
     .text-input:focus {
       border-color: var(--coffee-main);
+    }
+
+    /* 即時標籤預覽膠囊區 */
+    .live-tags-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 6px;
+    }
+
+    .live-tag-chip {
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: var(--coffee-soft);
+      color: var(--coffee-dark);
+      border: 1px solid #DFCBB7;
     }
 
     .submit-full-btn {
@@ -1403,7 +1419,8 @@
             <div class="color-grid-picker" id="form-color-chips"></div>
 
             <span class="form-section-label">4. 細節標籤</span>
-            <input type="text" id="form-tags-input" class="text-input" placeholder="例如：磨毛 顯瘦 微透" />
+            <input type="text" id="form-tags-input" class="text-input" placeholder="例如：透膚 磨毛" />
+            <div id="live-tags-preview" class="live-tags-preview"></div>
           </div>
         </div>
 
@@ -1536,6 +1553,7 @@
 
     const COLORS = [
       { name: '白', hex: '#FFFFFF' },
+      { name: '杏', hex: '#EEDCC6' },
       { name: '黑', hex: '#262322' },
       { name: '粉', hex: '#F3B8C8' },
       { name: '紅', hex: '#C84B4B' },
@@ -1633,6 +1651,24 @@
       });
     }
 
+    /* 標籤拆解函式：遇到空格、逗號、句點(.)、頓號、斜線或 # 自動拆成多個獨立標籤 */
+    function parseTagList(rawStr) {
+      if (!rawStr) return [];
+      return rawStr
+        .split(/[\s,，.。、/#]+/)
+        .map(s => s.trim())
+        .filter(Boolean);
+    }
+
+    function renderLiveTagsPreview() {
+      const raw = document.getElementById('form-tags-input').value;
+      const tags = parseTagList(raw);
+      const previewEl = document.getElementById('live-tags-preview');
+      previewEl.innerHTML = tags
+        .map(t => `<span class="live-tag-chip">#${escapeHtml(t)}</span>`)
+        .join('');
+    }
+
     let appState = {
       items: [],
       superCats: [{ id: 'sc_default', name: '日常搭配', bgColor: '#FAF5EE' }],
@@ -1649,10 +1685,10 @@
       pickerMode: null,
       editingItemId: null,
       formImages: [],
-      formRawImages: [], // 保存未裁切前的原圖，方便再次調整裁切範圍
+      formRawImages: [],
       formCat: null,
       formSubCat: null,
-      formColor: null,
+      formColors: [], // 支援多選顏色
       heartItemId: null,
       heartSelectedSuperCatId: null,
       heartNewSuperCatColor: '#FAF5EE',
@@ -1668,7 +1704,7 @@
     };
 
     /* ================= 裁切狀態（固定 3:4 比例） ================= */
-    const CROP_ASPECT = 3 / 4; // 寬 / 高
+    const CROP_ASPECT = 3 / 4;
     const cropState = {
       slotIdx: 0,
       stageW: 0,
@@ -1677,7 +1713,7 @@
       y: 0,
       w: 0,
       h: 0,
-      mode: null, // 'move' | 'nw' | 'ne' | 'sw' | 'se'
+      mode: null,
       startPointerX: 0,
       startPointerY: 0,
       startX: 0,
@@ -1708,7 +1744,6 @@
       cropState.stageW = stageW;
       cropState.stageH = stageH;
 
-      // 在圖片內建立最大可能的 3:4 裁切框並置中
       let boxW = stageW * 0.86;
       let boxH = boxW / CROP_ASPECT;
       if (boxH > stageH * 0.86) {
@@ -1761,7 +1796,6 @@
           cropState.x = nx;
           cropState.y = ny;
         } else {
-          // 固定 3:4 比例縮放，依據對角錨點計算最大允許邊界
           let anchorX, anchorY, rawW;
           if (cropState.mode === 'se') {
             anchorX = startX;
@@ -1954,7 +1988,13 @@
       const filtered = appState.items.filter(item => {
         if (item.category !== ui.activeCat) return false;
         if (ui.activeSubCat && item.subCategory !== ui.activeSubCat) return false;
-        if (ui.activeColor && item.color !== ui.activeColor) return false;
+        if (ui.activeColor) {
+          // 支援新版多色陣列 item.colors 與舊版單色字串 item.color
+          const itemColors = Array.isArray(item.colors)
+            ? item.colors
+            : (item.color ? [item.color] : []);
+          if (!itemColors.includes(ui.activeColor)) return false;
+        }
         return true;
       });
 
@@ -2041,7 +2081,14 @@
         ? editItem.category
         : (presetCat || (ui.view === 'wardrobe' ? ui.activeCat : '上衣'));
       ui.formSubCat = editItem ? editItem.subCategory : null;
-      ui.formColor = editItem ? editItem.color : null;
+
+      if (editItem) {
+        ui.formColors = Array.isArray(editItem.colors)
+          ? [...editItem.colors]
+          : (editItem.color ? [editItem.color] : []);
+      } else {
+        ui.formColors = [];
+      }
 
       document.getElementById('create-item-modal-title').textContent =
         editItem ? '編輯服裝檔案' : '新增服裝至衣櫃';
@@ -2050,6 +2097,7 @@
       document.getElementById('form-tags-input').value =
         editItem && editItem.tags ? editItem.tags.join(' ') : '';
 
+      renderLiveTagsPreview();
       renderCreateItemForm();
       document.getElementById('modal-create-item').classList.remove('hidden');
     }
@@ -2114,15 +2162,19 @@
         subSec.classList.add('hidden');
       }
 
+      // 顏色支援多選切換
       const colorWrap = document.getElementById('form-color-chips');
       colorWrap.innerHTML = '';
       COLORS.forEach(c => {
+        const isSelected = ui.formColors.includes(c.name);
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'color-choice-btn' + (ui.formColor === c.name ? ' active' : '');
+        btn.className = 'color-choice-btn' + (isSelected ? ' active' : '');
         btn.innerHTML = `<span class="mini-dot" style="background:${c.hex};"></span><span>${c.name}</span>`;
         btn.onclick = () => {
-          ui.formColor = c.name;
+          const idx = ui.formColors.indexOf(c.name);
+          if (idx >= 0) ui.formColors.splice(idx, 1);
+          else ui.formColors.push(c.name);
           renderCreateItemForm();
         };
         colorWrap.appendChild(btn);
@@ -2388,6 +2440,8 @@
       appState = await loadAppState();
       setupCropInteractions();
 
+      document.getElementById('form-tags-input').addEventListener('input', renderLiveTagsPreview);
+
       document.getElementById('btn-crop-reset').onclick = () => initCropBox();
       document.getElementById('btn-crop-confirm').onclick = () => applyCropResult();
 
@@ -2538,15 +2592,13 @@
           showToast('請選擇分類與款式');
           return;
         }
-        if (!ui.formColor) {
-          showToast('請選擇顏色');
+        if (ui.formColors.length === 0) {
+          showToast('請至少選擇 1 個顏色');
           return;
         }
 
         const rawTags = document.getElementById('form-tags-input').value.trim();
-        const tags = rawTags
-          ? rawTags.split(/[\s,，#]+/).map(s => s.trim()).filter(Boolean)
-          : [];
+        const tags = parseTagList(rawTags);
 
         if (ui.editingItemId) {
           const item = appState.items.find(it => it.id === ui.editingItemId);
@@ -2554,7 +2606,8 @@
             item.images = [...ui.formImages];
             item.category = ui.formCat;
             item.subCategory = ui.formSubCat;
-            item.color = ui.formColor;
+            item.colors = [...ui.formColors];
+            item.color = ui.formColors[0];
             item.tags = tags;
           }
           ui.wardrobeEditMode = false;
@@ -2566,7 +2619,8 @@
             images: [...ui.formImages],
             category: ui.formCat,
             subCategory: ui.formSubCat,
-            color: ui.formColor,
+            colors: [...ui.formColors],
+            color: ui.formColors[0],
             tags,
             createdAt: Date.now()
           });
