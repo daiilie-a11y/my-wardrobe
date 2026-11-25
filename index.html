@@ -392,6 +392,7 @@
       background: #F2EAE0;
       position: relative;
       overflow: hidden;
+      cursor: pointer;
     }
 
     .item-img-box img {
@@ -812,6 +813,90 @@
       cursor: pointer;
     }
 
+    /* ================= 放大檢視照片彈窗 ================= */
+    #modal-zoom-img {
+      z-index: 95;
+      background: rgba(24, 16, 12, 0.82);
+    }
+
+    .zoom-modal-box {
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      animation: popUp 0.2s ease;
+    }
+
+    .zoom-photo-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #2B1E17;
+      border: 2px solid var(--lace-cream);
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.45);
+    }
+
+    .zoom-photo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .zoom-top-actions {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 5;
+    }
+
+    .zoom-circle-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--lace-cream);
+      color: var(--coffee-dark);
+      border: 2px solid var(--coffee-main);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .zoom-circle-btn:active {
+      transform: scale(0.92);
+    }
+
+    .zoom-dots-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .zoom-dot-btn {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 251, 245, 0.4);
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .zoom-dot-btn.active {
+      background: var(--lace-cream);
+      transform: scale(1.2);
+    }
+
     .create-item-layout {
       display: grid;
       grid-template-columns: 120px 1fr;
@@ -1066,7 +1151,6 @@
       border-color: var(--coffee-main);
     }
 
-    /* 即時標籤預覽膠囊區 */
     .live-tags-preview {
       display: flex;
       flex-wrap: wrap;
@@ -1369,6 +1453,20 @@
       </nav>
     </div>
 
+    <!-- ================= 彈窗 Z：點擊圖片放大檢視（右上角編輯圓圈） ================= -->
+    <div id="modal-zoom-img" class="modal-backdrop hidden">
+      <div class="zoom-modal-box">
+        <div class="zoom-photo-frame">
+          <img id="zoom-target-img" src="" alt="放大服裝照片" />
+          <div class="zoom-top-actions">
+            <button type="button" class="zoom-circle-btn" id="btn-zoom-edit" title="編輯內容">✎</button>
+            <button type="button" class="zoom-circle-btn" id="btn-zoom-close" title="關閉">✕</button>
+          </div>
+        </div>
+        <div class="zoom-dots-row" id="zoom-dots-row"></div>
+      </div>
+    </div>
+
     <!-- ================= 彈窗 A：新增／編輯服裝 ================= -->
     <div id="modal-create-item" class="modal-backdrop hidden">
       <div class="modal-card">
@@ -1651,7 +1749,6 @@
       });
     }
 
-    /* 標籤拆解函式：遇到空格、逗號、句點(.)、頓號、斜線或 # 自動拆成多個獨立標籤 */
     function parseTagList(rawStr) {
       if (!rawStr) return [];
       return rawStr
@@ -1688,7 +1785,9 @@
       formRawImages: [],
       formCat: null,
       formSubCat: null,
-      formColors: [], // 支援多選顏色
+      formColors: [],
+      zoomItemId: null,
+      zoomImgIdx: 0,
       heartItemId: null,
       heartSelectedSuperCatId: null,
       heartNewSuperCatColor: '#FAF5EE',
@@ -1702,6 +1801,40 @@
       draftFolderName: '',
       draftFolderItemIds: new Set()
     };
+
+    /* ================= 放大照片檢視與跳回編輯 ================= */
+    function openZoomModal(itemId, startIdx = 0) {
+      const item = appState.items.find(it => it.id === itemId);
+      if (!item || !item.images || item.images.length === 0) return;
+
+      ui.zoomItemId = itemId;
+      ui.zoomImgIdx = Math.min(startIdx, item.images.length - 1);
+      renderZoomModal();
+      document.getElementById('modal-zoom-img').classList.remove('hidden');
+    }
+
+    function renderZoomModal() {
+      const item = appState.items.find(it => it.id === ui.zoomItemId);
+      if (!item || !item.images.length) return;
+
+      const idx = ui.zoomImgIdx % item.images.length;
+      document.getElementById('zoom-target-img').src = item.images[idx];
+
+      const dotsEl = document.getElementById('zoom-dots-row');
+      dotsEl.innerHTML = '';
+      if (item.images.length > 1) {
+        item.images.forEach((_, i) => {
+          const dot = document.createElement('button');
+          dot.type = 'button';
+          dot.className = 'zoom-dot-btn' + (i === idx ? ' active' : '');
+          dot.onclick = () => {
+            ui.zoomImgIdx = i;
+            renderZoomModal();
+          };
+          dotsEl.appendChild(dot);
+        });
+      }
+    }
 
     /* ================= 裁切狀態（固定 3:4 比例） ================= */
     const CROP_ASPECT = 3 / 4;
@@ -1989,7 +2122,6 @@
         if (item.category !== ui.activeCat) return false;
         if (ui.activeSubCat && item.subCategory !== ui.activeSubCat) return false;
         if (ui.activeColor) {
-          // 支援新版多色陣列 item.colors 與舊版單色字串 item.color
           const itemColors = Array.isArray(item.colors)
             ? item.colors
             : (item.color ? [item.color] : []);
@@ -2008,10 +2140,11 @@
       }
       emptyEl.classList.add('hidden');
 
+      const isCheckMode = Boolean(ui.pickerMode) || ui.wardrobeEditMode;
       filtered.forEach(item => {
         const card = createClothingCardElement(item, {
           showHeart: !ui.pickerMode && !ui.wardrobeEditMode,
-          showCheckbox: Boolean(ui.pickerMode) || ui.wardrobeEditMode,
+          showCheckbox: isCheckMode,
           isChecked: ui.pickerMode
             ? ui.pickerMode.selectedIds.has(item.id)
             : ui.wardrobeSelectedIds.has(item.id),
@@ -2021,7 +2154,10 @@
             else targetSet.add(item.id);
             renderWardrobeView();
           },
-          onClickHeart: () => openHeartModal(item.id)
+          onClickHeart: () => openHeartModal(item.id),
+          onClickImage: () => {
+            if (!isCheckMode) openZoomModal(item.id, 0);
+          }
         });
         gridEl.appendChild(card);
       });
@@ -2069,6 +2205,8 @@
       }
       if (opts.showCheckbox) {
         card.onclick = () => opts.onToggleCheck();
+      } else if (opts.onClickImage) {
+        card.querySelector('.item-img-box').onclick = () => opts.onClickImage();
       }
       return card;
     }
@@ -2162,7 +2300,6 @@
         subSec.classList.add('hidden');
       }
 
-      // 顏色支援多選切換
       const colorWrap = document.getElementById('form-color-chips');
       colorWrap.innerHTML = '';
       COLORS.forEach(c => {
@@ -2387,6 +2524,9 @@
             if (ui.folderSelectedItemIds.has(item.id)) ui.folderSelectedItemIds.delete(item.id);
             else ui.folderSelectedItemIds.add(item.id);
             renderFolderDetailView();
+          },
+          onClickImage: () => {
+            if (!ui.folderEditMode) openZoomModal(item.id, 0);
           }
         });
         gridEl.appendChild(card);
@@ -2439,6 +2579,20 @@
     document.addEventListener('DOMContentLoaded', async () => {
       appState = await loadAppState();
       setupCropInteractions();
+
+      document.getElementById('btn-zoom-close').onclick = () => {
+        document.getElementById('modal-zoom-img').classList.add('hidden');
+      };
+      document.getElementById('modal-zoom-img').onclick = (e) => {
+        if (e.target.id === 'modal-zoom-img') {
+          document.getElementById('modal-zoom-img').classList.add('hidden');
+        }
+      };
+      document.getElementById('btn-zoom-edit').onclick = () => {
+        const targetItem = appState.items.find(it => it.id === ui.zoomItemId);
+        document.getElementById('modal-zoom-img').classList.add('hidden');
+        if (targetItem) openCreateItemModal(targetItem);
+      };
 
       document.getElementById('form-tags-input').addEventListener('input', renderLiveTagsPreview);
 
